@@ -1,0 +1,87 @@
+@startuml architecture
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam shadowing false
+skinparam roundcorner 8
+
+title Spec-Driven Development for UiPath
+
+file "**User Story**" as Story #FFFDE7
+file "**TDD.md**" as TDD #C8E6C9
+
+package "UiPath Agents" #E3F2FD {
+    rectangle "**Interview Agent**\n//Conversational//" as Interview #B3E5FC
+    rectangle "**Spec Agent**\n//Conversational//" as Spec #B3E5FC
+    rectangle "**TDD Agent**\n//Autonomous//" as TDDAgent #A5D6A7
+}
+
+rectangle "**UiPath Studio**\n**+ Autopilot**" as Studio #FFE0B2
+note right of Studio : Engineer-driven
+database "**GitLab**" as Git #E8E8E8
+
+Story --> Interview
+TDD --> Interview : context
+TDD --> Spec : context
+Interview --> Spec : Requirements.md
+Spec --> Studio : Plan.md\nTestScenarios.md
+Studio --> Git : Workflows
+Git --> TDDAgent : git diff +\nPlan.md + TDD.md
+TDDAgent --> TDD : updated
+
+@enduml
+
+@startuml sequence
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam shadowing false
+
+title Spec-Driven Development - Process Flow
+
+autonumber
+
+actor "Engineer" as User
+participant "Interview Agent" as Interview #B3E5FC
+participant "Spec Agent" as Spec #B3E5FC
+participant "TDD Agent" as TDD #A5D6A7
+participant "UiPath Studio\n(Autopilot)" as Studio #FFE0B2
+database "GitLab" as Git #E8E8E8
+
+== Requirements Gathering ==
+User -> Interview : Provide user story
+Interview -> Git : Read TDD.md (project context)
+loop Multi-turn conversation
+    Interview -> User : Ask clarifying questions
+    User -> Interview : Provide answers
+end
+Interview -> Git : Save Requirements.md
+
+== Planning ==
+User -> User : Review & approve requirements
+User -> Spec : Start planning
+Spec -> Git : Read Requirements.md + TDD.md
+loop Clarifying conversation
+    Spec -> User : Clarify technical details
+    User -> Spec : Provide input
+end
+Spec -> Git : Save Plan.md + TestScenarios.md
+
+== Implementation ==
+User -> User : Review & approve plan
+User -> Git : Read Plan.md
+User -> Studio : Use plan as Autopilot prompts
+Studio -> User : Generate workflows
+User -> Git : Commit workflows (.xaml)
+
+== Testing ==
+User -> Git : Read TestScenarios.md
+User -> Studio : Use scenarios as Autopilot prompts
+Studio -> User : Generate test workflows
+User -> Git : Commit test workflows
+
+== Documentation Update ==
+User -> Git : git diff (changed .xaml files)
+User -> TDD : Provide: git diff + Plan.md + TDD.md
+TDD -> User : Updated TDD.md
+User -> Git : Commit TDD.md
+
+@enduml
