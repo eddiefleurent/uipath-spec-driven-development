@@ -13,15 +13,17 @@ Detailed technical reference for the SDLC Agents system. For an overview, see [R
 | **Type** | Conversational |
 | **Platform** | UiPath Agent Builder |
 | **UI** | UiPath Apps |
-| **Input** | User Story, TDD.md (project context) |
+| **Input** | User Story, PDD.md (required), TDD.md (optional) |
 | **Output** | Requirements.md |
 | **Persona** | BA Expert |
 
 **Responsibilities:**
-- Read project context to understand existing architecture
-- Analyze user story to identify gaps and ambiguities
-- Conduct multi-turn conversation to gather requirements
-- Generate structured Requirements.md
+- Read PDD.md to understand AS-IS business process
+- Extract ONLY relevant business context for this specific user story
+- Read TDD.md (if provided) to understand existing automation architecture
+- Analyze user story to identify gaps not covered by PDD/TDD
+- Conduct multi-turn conversation to gather requirements (focused on gaps)
+- Generate focused Requirements.md with relevant business context
 
 **Tools:**
 | Tool | Purpose |
@@ -146,6 +148,56 @@ The Technical Design Document is the **single source of truth** for project arch
 
 ---
 
+## The PDD.md File
+
+The Process Definition Document captures the **AS-IS business process**—what humans do today before automation. It is **required for** the Interview Agent's inputs.
+
+### PDD vs TDD
+
+| Aspect | PDD.md | TDD.md |
+|--------|--------|--------|
+| **Focus** | Business process documentation | Automation architecture documentation |
+| **State** | AS-IS (current manual process) | TO-BE (automation implementation) |
+| **Content** | Process steps, business rules, stakeholders, statistics | Workflows, activities, error handling, integrations |
+| **Created By** | Business Analyst + UiPath Task Capture | TDD Agent (from git diff + Plan.md) |
+| **Created When** | Before automation (during process analysis) | After implementation (from code changes) |
+| **Used By** | Interview Agent | Interview Agent, Spec Agent |
+
+### What PDD Contains
+
+Based on UiPath Task Capture documentation, a PDD includes:
+
+| Section | Purpose |
+|---------|---------|
+| Introduction | Purpose, objectives, process contacts, prerequisites |
+| Process Documentation | AS-IS process map, process statistics |
+| Detailed Process Steps | Sequences, actions, timeframes, screenshots |
+| To-Be Process Analysis | Automation opportunities, scope definition |
+| Exception Planning | Business exceptions, application errors, reporting |
+
+### Why PDD Matters
+
+| Without PDD | With PDD |
+|-------------|----------|
+| Interview Agent asks many basic process questions | Interview Agent focuses on gaps and clarifications |
+| Requirements.md lacks business context | Requirements.md includes relevant business rules |
+| Spec Agent designs without process understanding | Spec Agent aligns design with business process |
+| Longer interview sessions | Shorter, more focused conversations |
+
+### How Interview Agent Uses PDD
+
+**Critical:** The Interview Agent extracts **ONLY relevant context** from PDD into Requirements.md.
+
+- ✓ Include process steps affected by this user story
+- ✓ Include applicable business rules and decisions
+- ✓ Include relevant stakeholders and exceptions
+- ✗ Do NOT copy the entire PDD
+- ✗ Do NOT include unrelated process steps
+
+**Template:** [templates/PDD_EXAMPLE.md](./templates/PDD_EXAMPLE.md)
+
+---
+
 ## Architecture Patterns
 
 The Spec Agent selects patterns based on requirements:
@@ -188,16 +240,18 @@ The Spec Agent selects patterns based on requirements:
 
 ```
 1. Engineer provides user story to Interview Agent
-2. Agent reads TDD.md to understand project context
-3. Multi-turn conversation to clarify requirements
-   - Business context questions
-   - Process flow questions
+2. Agent reads PDD.md to understand AS-IS business process (required)
+3. Agent reads TDD.md to understand existing automation (optional)
+4. Agent extracts ONLY relevant context from PDD for this story
+5. Multi-turn conversation to clarify requirements (focused on gaps)
+   - Questions about gaps not covered by PDD/TDD
+   - Process flow clarifications
    - Data & integration questions
    - Error handling questions
    - Technical requirements questions
-4. Agent validates understanding with summary
-5. Agent generates Requirements.md
-6. Engineer reviews and approves
+6. Agent validates understanding with summary
+7. Agent generates Requirements.md (with relevant PDD context)
+8. Engineer reviews and approves
 ```
 
 ### 2. Planning
@@ -256,17 +310,18 @@ The Spec Agent selects patterns based on requirements:
 ## Artifact Flow
 
 ```
-User Story
-    │
-    ▼
-┌─────────────────┐
-│ Interview Agent │
-└────────┬────────┘
-         │ Requirements.md
-         ▼
-┌─────────────────┐
-│   Spec Agent    │
-└────────┬────────┘
+PDD.md (required)    User Story
+    │                    │
+    └────────┬───────────┘
+             ▼
+    ┌─────────────────┐
+    │ Interview Agent │◄── TDD.md (optional)
+    └────────┬────────┘
+             │ Requirements.md
+             ▼
+    ┌─────────────────┐
+    │   Spec Agent    │◄── TDD.md
+    └────────┬────────┘
          │ Plan.md + TestScenarios.md
          ▼
 ┌─────────────────┐
@@ -321,5 +376,6 @@ User Story
 | [Interview Agent](./agents/interview/README.md) | Setup and usage |
 | [Spec Agent](./agents/spec/README.md) | Setup and usage |
 | [TDD Agent](./agents/tdd/README.md) | Setup and usage |
+| [PDD Example](./templates/PDD_EXAMPLE.md) | Sample Process Definition Document |
 | [TDD Template](./templates/TDD_TEMPLATE.md) | Project documentation template |
 | [Autopilot Guide](./studio/AUTOPILOT_GUIDE.md) | Using Autopilot with Plan.md |

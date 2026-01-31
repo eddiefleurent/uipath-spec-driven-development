@@ -1,6 +1,6 @@
 # Example Interview: Invoice Processing Automation
 
-This example demonstrates a complete interview session using the Interview Agent.
+This example demonstrates a complete interview session using the Interview Agent, showing how the agent uses PDD.md to focus the conversation.
 
 ---
 
@@ -10,104 +10,86 @@ This example demonstrates a complete interview session using the Interview Agent
 
 ---
 
-## Interview Session
+## Context Provided
 
-### Phase 1: Initial Analysis
-
-**Agent:**
-
-Thank you for providing the details of the process you want to automate. I'll start by asking some clarifying questions to ensure I fully understand your requirements and can document them comprehensively.
-
-From your description, the process involves:
-1. Logging into the Acme Vendor Portal
-2. Downloading invoices in PDF format
-3. Extracting key fields from the invoices
-4. Validating the extracted data against your purchase order system (SAP)
-5. Uploading validated invoices to your accounting system (QuickBooks)
-6. Scheduling the process to run daily at 6 AM
-
-Let's move to the next phase to gather more details.
+- **PDD.md**: Process Definition Document for Invoice Approval Process (see [templates/PDD_EXAMPLE.md](../../../templates/PDD_EXAMPLE.md))
+- **TDD.md**: Not provided (new automation project)
 
 ---
 
-### Phase 2: Requirements Gathering
+## Interview Session
+
+### Phase 1: Initial Analysis (With PDD)
 
 **Agent:**
 
-#### 1. Business Context
-- What is the primary goal of this automation? Is it to save time, reduce errors, or something else?
-- How many invoices are typically processed daily?
-- Are there any compliance or audit requirements for this process?
+Thank you for providing the user story and the PDD. I've reviewed the Process Definition Document for the Invoice Approval Process.
 
-#### 2. Process Flow
-- How do users currently log into the Acme Vendor Portal? Is it via username/password, SSO, or another method?
-- Are there specific filters or criteria to identify which invoices need to be downloaded from the portal?
-- Are the invoices stored in a specific folder or section within the portal?
-- Should the downloaded invoices be saved locally or on a shared drive? If so, what is the folder structure or naming convention?
-- What are the key fields to extract from the invoices? You mentioned invoice number, date, amount, and vendor name—are there any additional fields?
-- How is the validation against SAP performed? Is there an API or database query involved, or is it a manual process currently?
-- What specific criteria determine whether an invoice is valid or invalid?
-- If an invoice is invalid, what should happen? Should it be flagged, logged, or sent to a specific team for review?
-- How is the upload to QuickBooks performed? Is there an API, or does it involve manual data entry into the system?
-- Are there any specific steps or approvals required before uploading to QuickBooks?
+**From the PDD, I understand:**
+- The current process handles 50-100 invoices daily
+- Invoices are downloaded from Acme Vendor Portal (filtered by "New/Unpaid" status)
+- Key fields extracted: Invoice Number, Invoice Date, Vendor Name, PO Number, Total Amount
+- Validation against SAP requires: vendor match, amount within 2% tolerance, PO in "Open" status
+- Approval thresholds: ≤$1,000 auto-approve, >$1,000 requires manager approval
+- QuickBooks upload is done via API
+- Exception handling includes retry logic for portal unavailability
 
-#### 3. Data & Integration
-- Do you have access to the Acme Vendor Portal, SAP, and QuickBooks systems? Are there any access restrictions or permissions we need to consider?
-- Are there existing APIs or connectors for SAP and QuickBooks that we can leverage for this automation?
-- Are the PDF invoices structured (e.g., consistent format) or unstructured? If unstructured, do they vary significantly in layout?
-- Are there any specific data validation rules for the extracted fields (e.g., date format, amount range)?
-- Should the extracted data be stored in a database or file for reporting or audit purposes?
+**This user story aligns with Steps 1-4 and Step 7 of the documented process.**
 
-#### 4. Error Handling & Edge Cases
-- What should happen if the Acme Vendor Portal is unavailable or the login fails?
-- What should the automation do if an invoice cannot be downloaded or is corrupted?
-- How should the process handle duplicate invoices?
-- What should happen if the validation against SAP fails (e.g., no matching purchase order)?
-- What should the automation do if the upload to QuickBooks fails?
+Since the PDD provides comprehensive process details, I'll focus my questions on:
+1. Gaps not covered in the PDD
+2. Automation-specific requirements
+3. Clarifications on edge cases
 
-#### 5. Technical Requirements
-- Are there any specific security requirements for handling sensitive data (e.g., encryption, secure storage)?
-- Should the automation send notifications (e.g., email alerts) for errors or completion? If so, who should receive them?
-- Are there any performance requirements (e.g., maximum time to process all invoices)?
-- Should the automation generate logs or reports? If so, what details should be included?
+Let's proceed with targeted questions.
+
+---
+
+### Phase 2: Requirements Gathering (Focused Questions)
+
+**Agent:**
+
+Based on the PDD, I already have answers to many standard questions. Let me ask about **gaps and automation-specific details**:
+
+#### 1. Automation-Specific Questions (Not in PDD)
+- The PDD mentions service account credentials for the portal. Where should the automation store these credentials? (Orchestrator Assets, Azure Key Vault, etc.)
+- The PDD shows a 30-minute SLA. Should the automation have a timeout, or should it process all invoices regardless of time?
+- Should this run as attended or unattended automation?
+
+#### 2. Clarifications on PDD Details
+- The PDD mentions invoices are "semi-structured but consistent per vendor." Do all vendors use the same invoice template, or are there multiple templates to handle?
+- The PDD shows 2% tolerance for amount matching. Is this tolerance configurable, or should it be hardcoded?
+
+#### 3. Scope Confirmation
+- The PDD includes manager approval for invoices >$1,000. Should this automation handle the approval workflow, or just the auto-approve path (≤$1,000)?
+- Should the automation update the tracking spreadsheet mentioned in Step 8, or will a database replace this?
+
+#### 4. Error Handling Confirmation
+- The PDD specifies "retry 3x then alert" for portal issues. Who should receive these alerts? (Email distribution list, Teams channel, etc.)
+- For SAP validation failures, the PDD says "flag and continue." Should these be added to an Orchestrator queue for manual review?
+
+*Note: I'm skipping questions about process steps, business rules, and basic error handling since the PDD already documents these clearly.*
 
 ---
 
 **User:**
 
-**1. Business Context:**
-- Primary goal is to reduce manual effort and errors
-- We process ~20–40 invoices per day
-- Basic audit trail is required (logs + retained PDFs), nothing extreme
+**1. Automation-Specific:**
+- Store credentials in Orchestrator Assets (Credential type)
+- No hard timeout—process all invoices, but alert if exceeding 30 minutes
+- Unattended automation, triggered by Orchestrator schedule
 
-**2. Process Flow:**
-- Login is via username/password (no SSO, MFA not required for this account)
-- Invoices are filtered by "New / Unpaid" status in the portal
-- They're all in a single "Invoices" section, no subfolders
-- Save PDFs to a shared network drive with naming: `Vendor_InvoiceNumber_Date.pdf`
-- Fields needed are exactly: invoice number, invoice date, total amount, vendor name
-- Validation against SAP is via API: invoice must match an open PO by PO number and amount (exact match)
-- If invalid, mark as failed, log reason, and notify AP team by email
-- QuickBooks upload is via API; no manual steps or approvals needed before upload
+**2. Clarifications:**
+- We have 3 main vendor templates, but they're similar enough that Document Understanding should handle them
+- The 2% tolerance should be configurable via Config.xlsx
 
-**3. Data & Integration:**
-- We have service account access to Acme Portal, SAP APIs, and QuickBooks APIs
-- PDFs are semi-structured but consistent per vendor (same template)
-- Validation rules are straightforward: valid date, non-negative amount, required fields present
-- Store extracted data + status in a database for reporting and audit
+**3. Scope:**
+- For now, only handle auto-approve path (≤$1,000). Manager approval will be Phase 2.
+- Replace the tracking spreadsheet with a SQL database for better reporting
 
 **4. Error Handling:**
-- If portal login fails or portal is down: retry 3 times, then alert
-- Corrupt or unreadable PDFs should be skipped, logged, and alerted
-- Detect duplicates by invoice number + vendor; skip if already processed
-- SAP validation failures should not stop the run—just flag and continue
-- QuickBooks upload failures should retry once, then flag and alert
-
-**5. Technical Requirements:**
-- Credentials must be stored securely (vault/secret manager)
-- Email notifications for failures and a daily success summary to AP distribution list
-- End-to-end run should finish within 30 minutes
-- Logs should include timestamp, invoice ID, step, status, and error message if any
+- Alerts go to ap-alerts@company.com distribution list
+- Yes, add validation failures to an Orchestrator queue called "InvoiceExceptions" for manual review
 
 ---
 
@@ -115,43 +97,39 @@ Let's move to the next phase to gather more details.
 
 **Agent:**
 
-Thank you for the detailed responses! Based on the information provided, I now have a clear understanding of the process and its requirements. Let me summarize:
+Thank you! Let me summarize the requirements, combining PDD context with your clarifications:
 
-#### Business Context
-- **Goal:** Automate the invoice processing workflow to reduce manual effort and errors
-- **Volume:** Approximately 20–40 invoices processed daily
-- **Audit:** Basic audit trail required, including logs and retained PDFs
+#### From PDD (Relevant Context for This Story)
+- **Volume:** 50-100 invoices daily (PDD Step 2.2)
+- **Process Steps:** Download → Extract → Validate → Upload (PDD Steps 2-4, 7)
+- **Validation Rules:** Vendor match, amount within 2% tolerance, PO status "Open" (PDD Step 4)
+- **Business Rules:** Auto-approve ≤$1,000 (PDD Step 5)
+- **Error Handling:** Retry 3x for portal issues, skip corrupt PDFs (PDD Section 5)
 
-#### Process Flow
-1. Log into Acme Vendor Portal using username and password
-2. Filter invoices by "New / Unpaid" status and download from the "Invoices" section
-3. Save PDFs to shared network drive with naming: `Vendor_InvoiceNumber_Date.pdf`
-4. Extract key fields: invoice number, invoice date, total amount, vendor name
-5. Validate via SAP API—match open PO by PO number and exact amount
-6. If invalid: flag, log reason, notify AP team via email
-7. If valid: upload to QuickBooks via API (no approval needed)
+#### From This Interview (Automation-Specific)
+- **Scope:** Auto-approve path only (≤$1,000); manager approval is Phase 2
+- **Credentials:** Orchestrator Assets (Credential type)
+- **Execution:** Unattended, Orchestrator-triggered at 6 AM
+- **Data Storage:** SQL database (replacing tracking spreadsheet)
+- **Configuration:** 2% tolerance configurable via Config.xlsx
+- **Alerts:** ap-alerts@company.com distribution list
+- **Exceptions:** Add to "InvoiceExceptions" Orchestrator queue
 
-#### Data & Integration
-- Service account access available for all systems
-- PDFs are semi-structured but consistent per vendor
-- Store extracted data and processing status in database for reporting/audit
+#### Combined Requirements Summary
 
-#### Error Handling
-| Scenario | Action |
-|----------|--------|
-| Portal login fails | Retry 3×, then alert |
-| Corrupt/unreadable PDF | Skip, log, alert |
-| Duplicate invoice | Skip if already processed |
-| SAP validation failure | Flag and continue |
-| QuickBooks upload failure | Retry once, then flag and alert |
+| Aspect | Requirement |
+|--------|-------------|
+| Trigger | Orchestrator schedule, daily 6 AM |
+| Scope | Auto-approve invoices ≤$1,000 only |
+| Portal Access | Orchestrator Credential asset |
+| Invoice Templates | 3 vendor templates, Document Understanding |
+| Validation | SAP API, 2% tolerance (configurable) |
+| Output | QuickBooks API upload |
+| Exceptions | Orchestrator queue for manual review |
+| Alerts | Email to ap-alerts@company.com |
+| Audit | SQL database + retained PDFs |
 
-#### Technical Requirements
-- Credentials stored securely in vault/secret manager
-- Email notifications for failures + daily success summary
-- Complete within 30 minutes
-- Comprehensive logging (timestamp, invoice ID, step, status, error message)
-
-**Does this summary align with your expectations? If so, I'll proceed to generate the Requirements document.**
+**Does this capture the requirements accurately?**
 
 ---
 
@@ -177,19 +155,32 @@ This interview demonstrates several best practices:
 
 | Practice | Example |
 |----------|---------|
-| **Grouped questions** | Questions organized by theme (Business, Process, Data, Errors, Technical) |
-| **Follow-up based on answers** | Agent adapted questions based on API availability |
-| **Explicit validation** | Summary presented before document generation |
-| **Comprehensive coverage** | All critical areas addressed in ~5-10 minutes |
+| **PDD-informed questions** | Agent skipped basic process questions already answered by PDD |
+| **Focused on gaps** | Questions targeted automation-specific details not in PDD |
+| **Selective extraction** | Agent identified relevant PDD sections (Steps 2-4, 7) for this story |
+| **Explicit validation** | Summary clearly separates PDD context from interview findings |
+| **Scope clarification** | Agent confirmed what's in/out of scope (manager approval = Phase 2) |
 
 ---
 
 ## Interview Metrics
 
-| Metric | Value |
-|--------|-------|
-| Question groups | 5 |
-| Total questions asked | 23 |
-| User responses | 2 (grouped answers) |
-| Estimated duration | 5-10 minutes |
-| Completeness score | 95% |
+| Metric | Value | Notes |
+|--------|-------|-------|
+| Question groups | 4 | Reduced from 5 (PDD covered business context) |
+| Total questions asked | 12 | Reduced from 23 (PDD answered many) |
+| User responses | 1 (grouped answers) | More efficient with PDD |
+| Estimated duration | 3-5 minutes | Faster than without PDD |
+| PDD sections referenced | 5 | Steps 2-4, 7, Section 5 |
+
+---
+
+## Comparison: With vs Without PDD
+
+| Aspect | Without PDD | With PDD |
+|--------|-------------|----------|
+| Questions asked | 23 | 12 |
+| Duration | 5-10 minutes | 3-5 minutes |
+| Process understanding | Built from scratch | Pre-established |
+| Focus | Basic process discovery | Automation-specific details |
+| Requirements.md | Generic structure | Includes relevant PDD context |

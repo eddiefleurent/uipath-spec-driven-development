@@ -9,16 +9,27 @@ Conversational agent that gathers requirements from user stories through multi-t
 | **Type** | Conversational |
 | **Platform** | UiPath Agent Builder |
 | **UI** | UiPath Apps |
-| **Input** | User Story, TDD.md (project context) |
+| **Input** | User Story, PDD.md (required), TDD.md (optional) |
 | **Output** | Requirements.md |
 
 ## What It Does
 
-1. Reads project context (TDD.md) to understand existing architecture
-2. Analyzes the user story to identify gaps
-3. Asks clarifying questions in logical groups
-4. Validates understanding with the engineer
-5. Generates structured Requirements.md
+1. Reads PDD.md (required) to understand the AS-IS business process
+2. Reads TDD.md (optional) to understand existing automation architecture
+3. Analyzes the user story to identify gaps not covered by PDD/TDD
+4. Extracts ONLY relevant business context from PDD for this specific story
+5. Asks clarifying questions in logical groups (focused on gaps)
+6. Validates understanding with the engineer
+7. Generates structured Requirements.md with focused, relevant content
+
+## Key Concept: PDD vs TDD
+
+| Document | Focus | Content |
+|----------|-------|---------|
+| **PDD.md** (required) | AS-IS business process | Process steps, business rules, stakeholders, decisions |
+| **TDD.md** (optional) | Automation architecture | Workflows, activities, error handling, integrations |
+
+The Interview Agent uses PDD to understand *what the business does today* and TDD to understand *what automation already exists*.
 
 ## Building the Agent
 
@@ -57,11 +68,13 @@ Key persona: **BA Expert** with 10+ years RPA experience.
 ```
 Initialize
 ├── Load user story
-├── Read TDD.md (project context)
-└── Analyze gaps
+├── Read PDD.md (business process - required)
+├── Read TDD.md (automation context - optional)
+├── Extract relevant PDD context for this story
+└── Analyze gaps (what's NOT in PDD/TDD)
 
 Interview Loop
-├── Ask question group
+├── Ask question group (focused on gaps)
 ├── Capture response
 ├── Analyze for follow-ups
 └── Check completion
@@ -72,7 +85,7 @@ Validate
 └── Address corrections
 
 Generate
-└── Output Requirements.md
+└── Output Requirements.md (with relevant PDD context)
 ```
 
 ## Question Groups
