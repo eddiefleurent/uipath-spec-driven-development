@@ -150,7 +150,7 @@ The Technical Design Document is the **single source of truth** for project arch
 
 ## The PDD.md File
 
-The Process Definition Document captures the **AS-IS business process**—what humans do today before automation. It is a **required input** for the Interview Agent.
+The Process Definition Document captures the **AS-IS business process**—what humans do today before automation. It is **required for** the Interview Agent's inputs.
 
 ### PDD vs TDD
 
