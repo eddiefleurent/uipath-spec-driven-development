@@ -18,8 +18,8 @@ Three conversational agents built with UiPath Agent Builder that automate the re
 
 | Agent | Role | Input | Output |
 |-------|------|-------|--------|
-| **Interview Agent** | BA Expert | User Story | Requirements.md |
-| **Spec Agent** | Solution Architect | Requirements.md | Plan.md + TestScenarios.md |
+| **Interview Agent** | BA Expert | User Story + PDD.md (required) + TDD.md (optional) | Requirements.md |
+| **Spec Agent** | Solution Architect | Requirements.md + TDD.md | Plan.md + TestScenarios.md |
 | **TDD Agent** | Technical Writer | Git diff + Plan.md | Updated TDD.md |
 
 Engineers use **UiPath Studio + Autopilot** to implement workflows from Plan.md.
@@ -34,11 +34,19 @@ Engineers use **UiPath Studio + Autopilot** to implement workflows from Plan.md.
 
 ## How It Works
 
+### 0. Process Documentation (Required)
+Before starting, ensure you have:
+- **PDD.md**: Process Definition Document created using UiPath Task Capture
+  - Documents the AS-IS business process (what humans do today)
+  - Contains process steps, business rules, stakeholders, decisions, exceptions
+
 ### 1. Requirements Gathering
 Engineer provides a user story to the **Interview Agent**, which:
-- Reads project context (TDD.md) to understand existing architecture
-- Asks clarifying questions through multi-turn conversation
-- Generates comprehensive Requirements.md
+- Reads PDD.md (required) to understand the AS-IS business process
+- Reads TDD.md (optional) to understand existing automation architecture
+- Extracts ONLY relevant business context from PDD for this specific story
+- Asks clarifying questions focused on gaps not covered by PDD/TDD
+- Generates focused Requirements.md with relevant business context
 
 ### 2. Planning
 The **Spec Agent** takes approved requirements and:
@@ -59,32 +67,54 @@ The **TDD Agent** receives git diff and:
 - Updates TDD.md with new/changed workflow documentation
 - Maintains the project's single source of truth
 
-## Key Concept: Project Context
+## Key Concept: Process Context
 
-These agents work on **individual stories** within existing projects—not greenfield solutions. The TDD.md file (Technical Design Document—not to be confused with Test-Driven Development) provides essential context:
+### PDD.md (Required) - Business Process
+The Process Definition Document captures the **AS-IS business process**—what humans do today before automation. Created using UiPath Task Capture, it contains:
+
+- Process steps and workflow diagrams
+- Business rules and decision points
+- Stakeholders and their roles
+- Exception scenarios
+- Process statistics (volume, duration)
+
+The Interview Agent reads PDD and extracts **only the relevant context** for each user story into Requirements.md.
+
+### TDD.md (Optional) - Automation Architecture
+The Technical Design Document (not Test-Driven Development) captures **existing automation architecture**:
 
 - Existing workflows and their responsibilities
 - Architecture patterns in use
 - Coding standards and conventions
 - Integration details
 
-Without this context, agents might suggest incompatible approaches. With it, they can say "modify existing X" vs "create new Y".
+Without TDD context, agents might suggest incompatible approaches. With it, they can say "modify existing X" vs "create new Y".
+
+| Document | Focus | Created By | Used By |
+|----------|-------|------------|---------|
+| **PDD.md** | AS-IS business process | Business Analyst + Task Capture | Interview Agent |
+| **TDD.md** | Automation architecture | TDD Agent | Interview Agent, Spec Agent |
 
 ## Quick Start
 
-1. **Set up project documentation**
-   - Create TDD.md using the [template](./templates/TDD_TEMPLATE.md)
-   - Document your existing project architecture
+1. **Create PDD using UiPath Task Capture (Required)**
+   - Document the AS-IS business process
+   - Include process steps, business rules, decisions, exceptions
+   - See [templates/PDD_EXAMPLE.md](./templates/PDD_EXAMPLE.md) for reference format
 
-2. **Build the Interview Agent**
+2. **Set up project documentation (For existing projects)**
+   - Create TDD.md using the [template](./templates/TDD_TEMPLATE.md)
+   - Document your existing automation architecture
+
+3. **Build the Interview Agent**
    - Follow [agents/interview/README.md](./agents/interview/README.md)
    - Use prompts from [agents/interview/PROMPTS.md](./agents/interview/PROMPTS.md)
 
-3. **Build the Spec Agent**
+4. **Build the Spec Agent**
    - Follow [agents/spec/README.md](./agents/spec/README.md)
    - Use prompts from [agents/spec/PROMPTS.md](./agents/spec/PROMPTS.md)
 
-4. **Test with a real user story**
+5. **Test with a real user story**
    - Start with a well-understood story for validation
    - Compare agent output to how you'd approach it manually
 
@@ -97,6 +127,7 @@ Without this context, agents might suggest incompatible approaches. With it, the
 | [Spec Agent](./agents/spec/README.md) | Building the planning agent |
 | [TDD Agent](./agents/tdd/README.md) | Building the documentation agent |
 | [Autopilot Guide](./studio/AUTOPILOT_GUIDE.md) | Using Autopilot with Plan.md |
+| [PDD Example](./templates/PDD_EXAMPLE.md) | Sample Process Definition Document |
 | [TDD Template](./templates/TDD_TEMPLATE.md) | Project documentation template |
 
 ## Prerequisites
@@ -130,6 +161,7 @@ uipath-spec-driven-development/
 │       └── PROMPTS.md        # System prompts
 │
 ├── templates/
+│   ├── PDD_EXAMPLE.md        # Sample Process Definition Document
 │   └── TDD_TEMPLATE.md       # Project documentation template
 │
 └── studio/
@@ -140,6 +172,7 @@ uipath-spec-driven-development/
 
 | Artifact | Created By | Used By |
 |----------|------------|---------|
+| PDD.md | Business Analyst + Task Capture | Interview Agent |
 | TDD.md | TDD Agent (maintained) | Interview Agent, Spec Agent |
 | Requirements.md | Interview Agent | Spec Agent, Engineer |
 | Plan.md | Spec Agent | Engineer (Autopilot), TDD Agent |

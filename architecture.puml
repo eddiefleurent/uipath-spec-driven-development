@@ -7,6 +7,7 @@ skinparam roundcorner 8
 title Spec-Driven Development for UiPath
 
 file "**User Story**" as Story #FFFDE7
+file "**PDD.md**" as PDD #FFF9C4
 file "**TDD.md**" as TDD #C8E6C9
 
 package "UiPath Agents" #E3F2FD {
@@ -20,7 +21,8 @@ note right of Studio : Engineer-driven
 database "**GitLab**" as Git #E8E8E8
 
 Story --> Interview
-TDD --> Interview : context
+PDD --> Interview : business context\n(required)
+TDD --> Interview : automation context\n(optional)
 TDD --> Spec : context
 Interview --> Spec : Requirements.md
 Spec --> Studio : Plan.md\nTestScenarios.md
@@ -48,9 +50,10 @@ database "GitLab" as Git #E8E8E8
 
 == Requirements Gathering ==
 User -> Interview : Provide user story
-Interview -> Git : Read TDD.md (project context)
+Interview -> Git : Read PDD.md (business process - required)
+Interview -> Git : Read TDD.md (automation context - optional)
 loop Multi-turn conversation
-    Interview -> User : Ask clarifying questions
+    Interview -> User : Ask clarifying questions\n(focused by PDD context)
     User -> Interview : Provide answers
 end
 Interview -> Git : Save Requirements.md

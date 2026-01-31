@@ -14,12 +14,15 @@ Conversational agent that transforms requirements into detailed implementation p
 
 ## What It Does
 
-1. Reads project context (TDD.md) and requirements
-2. Analyzes complexity and determines architecture approach
-3. Breaks work into atomic workflows
-4. Clarifies technical decisions with engineer
-5. Generates implementation plan with Autopilot-ready prompts
-6. Creates test scenario definitions
+1. Reads Requirements.md (which contains relevant business context extracted from PDD)
+2. Reads TDD.md for existing automation architecture context
+3. Analyzes complexity and determines architecture approach
+4. Breaks work into atomic workflows
+5. Clarifies technical decisions with engineer
+6. Generates implementation plan with Autopilot-ready prompts
+7. Creates test scenario definitions
+
+**Note:** The Spec Agent receives business process context via Requirements.md. The Interview Agent extracts relevant PDD content and includes it in Requirements.md, so the Spec Agent does not read PDD.md directly.
 
 ## Building the Agent
 

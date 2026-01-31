@@ -21,23 +21,34 @@ These agents work on **individual stories within existing UiPath projects**—no
 
 | Agent | Type | Input | Output | Persona |
 |-------|------|-------|--------|---------|
-| Interview Agent | Conversational | User Story + TDD.md | Requirements.md | BA Expert |
+| Interview Agent | Conversational | User Story + PDD.md (required) + TDD.md (optional) | Requirements.md | BA Expert |
 | Spec Agent | Conversational | Requirements.md + TDD.md + Coding Standards | Plan.md + TestScenarios.md | Solution Architect |
 | TDD Agent | Autonomous | Git diff + Plan.md + existing TDD.md | Updated TDD.md | Technical Writer |
 
 ### Process Flow
 
 ```
-User Story → Interview Agent → Requirements.md
-                                      ↓
-                            Spec Agent → Plan.md + TestScenarios.md
-                                      ↓
-                    Engineer uses UiPath Studio + Autopilot
-                                      ↓
-                            Workflows (.xaml) → GitLab
-                                      ↓
-                      TDD Agent → Updated TDD.md
+PDD.md (required) ─────┐
+                       │
+User Story ────────────┼──→ Interview Agent → Requirements.md
+                       │                           ↓
+TDD.md (optional) ─────┘                     Spec Agent → Plan.md + TestScenarios.md
+                                                  ↓
+                                    Engineer uses UiPath Studio + Autopilot
+                                                  ↓
+                                         Workflows (.xaml) → GitLab
+                                                  ↓
+                                         TDD Agent → Updated TDD.md
 ```
+
+### PDD vs TDD
+
+| Aspect | PDD.md | TDD.md |
+|--------|--------|--------|
+| **Focus** | AS-IS business process | Automation architecture |
+| **Content** | Process steps, business rules, stakeholders | Workflows, activities, integrations |
+| **Created By** | Business Analyst + Task Capture | TDD Agent |
+| **Required** | Yes (for Interview Agent) | Optional (for existing projects) |
 
 ### Architecture Patterns
 
@@ -71,6 +82,7 @@ These are created by engineers using the agents:
 
 | Artifact | Created By | Used By |
 |----------|------------|---------|
+| PDD.md | Business Analyst + Task Capture | Interview Agent |
 | TDD.md | TDD Agent (maintained) | Interview Agent, Spec Agent |
 | Requirements.md | Interview Agent | Spec Agent, Engineer |
 | Plan.md | Spec Agent | Engineer (Autopilot), TDD Agent |
