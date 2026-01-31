@@ -67,6 +67,10 @@ The **TDD Agent** receives git diff and:
 - Updates TDD.md with new/changed workflow documentation
 - Maintains the project's single source of truth
 
+## Resources
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/eddiefleurent/uipath-spec-driven-development) **Ask DeepWiki about this codebase** — AI-powered Q&A for understanding the three-agent system, process flow, and implementation details.
+
 ## Key Concept: Process Context
 
 ### PDD.md (Required) - Business Process
