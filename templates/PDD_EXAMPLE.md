@@ -1,10 +1,10 @@
 # Process Definition Document: Invoice Approval Process
 
-**Version:** 1.0  
-**Process Owner:** Accounts Payable Department  
-**Created By:** Business Analyst  
-**Created Date:** January 2026  
-**Tool:** UiPath Task Capture
+**Version:** 1.0
+**Process Owner:** Accounts Payable Department
+**Created By:** Business Analyst
+**Created Date:** January 2026
+**Documentation Method:** UiPath Task Capture (or other process documentation method)
 
 ---
 

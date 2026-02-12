@@ -24,7 +24,7 @@ Your mission is to gather complete requirements through conversation. You must:
 
 You will receive:
 - **User Story**: Initial description of what needs to be automated
-- **PDD.md** (required): Process Definition Document with AS-IS business process documentation (created via UiPath Task Capture)
+- **PDD.md** (required): Process Definition Document with AS-IS business process documentation (typically created using UiPath Task Capture or other process documentation methods)
 - **TDD.md** (optional): Technical Design Document with existing automation architecture context
 
 **Reading Order:**

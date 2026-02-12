@@ -36,9 +36,10 @@ Engineers use **UiPath Studio + Autopilot** to implement workflows from Plan.md.
 
 ### 0. Process Documentation (Required)
 Before starting, ensure you have:
-- **PDD.md**: Process Definition Document created using UiPath Task Capture
+- **PDD.md**: Process Definition Document capturing the AS-IS business process
   - Documents the AS-IS business process (what humans do today)
   - Contains process steps, business rules, stakeholders, decisions, exceptions
+  - Can be created using UiPath Task Capture or other process documentation methods
 
 ### 1. Requirements Gathering
 Engineer provides a user story to the **Interview Agent**, which:
@@ -74,13 +75,15 @@ The **TDD Agent** receives git diff and:
 ## Key Concept: Process Context
 
 ### PDD.md (Required) - Business Process
-The Process Definition Document captures the **AS-IS business process**—what humans do today before automation. Created using UiPath Task Capture, it contains:
+The Process Definition Document captures the **AS-IS business process**—what humans do today before automation. It contains:
 
 - Process steps and workflow diagrams
 - Business rules and decision points
 - Stakeholders and their roles
 - Exception scenarios
 - Process statistics (volume, duration)
+
+**Creation Methods**: UiPath Task Capture is recommended for comprehensive process capture with screenshots and timing data, but PDDs can also be created through process workshops, interviews, or other documentation methods.
 
 The Interview Agent reads PDD and extracts **only the relevant context** for each user story into Requirements.md.
 
@@ -96,14 +99,16 @@ Without TDD context, agents might suggest incompatible approaches. With it, they
 
 | Document | Focus | Created By | Used By |
 |----------|-------|------------|---------|
-| **PDD.md** | AS-IS business process | Business Analyst + Task Capture | Interview Agent |
+| **PDD.md** | AS-IS business process | Business Analyst (e.g., using Task Capture) | Interview Agent |
 | **TDD.md** | Automation architecture | TDD Agent | Interview Agent, Spec Agent |
 
 ## Quick Start
 
-1. **Create PDD using UiPath Task Capture (Required)**
+1. **Create PDD (Required)**
    - Document the AS-IS business process
    - Include process steps, business rules, decisions, exceptions
+   - Recommended: Use UiPath Task Capture for comprehensive capture with screenshots and timing data
+   - Alternative: Create through process workshops, interviews, or other documentation methods
    - See [templates/PDD_EXAMPLE.md](./templates/PDD_EXAMPLE.md) for reference format
 
 2. **Set up project documentation (For existing projects)**
@@ -176,7 +181,7 @@ uipath-spec-driven-development/
 
 | Artifact | Created By | Used By |
 |----------|------------|---------|
-| PDD.md | Business Analyst + Task Capture | Interview Agent |
+| PDD.md | Business Analyst (e.g., using Task Capture) | Interview Agent |
 | TDD.md | TDD Agent (maintained) | Interview Agent, Spec Agent |
 | Requirements.md | Interview Agent | Spec Agent, Engineer |
 | Plan.md | Spec Agent | Engineer (Autopilot), TDD Agent |

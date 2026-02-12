@@ -159,13 +159,13 @@ The Process Definition Document captures the **AS-IS business process**—what h
 | **Focus** | Business process documentation | Automation architecture documentation |
 | **State** | AS-IS (current manual process) | TO-BE (automation implementation) |
 | **Content** | Process steps, business rules, stakeholders, statistics | Workflows, activities, error handling, integrations |
-| **Created By** | Business Analyst + UiPath Task Capture | TDD Agent (from git diff + Plan.md) |
+| **Created By** | Business Analyst (e.g., using Task Capture) | TDD Agent (from git diff + Plan.md) |
 | **Created When** | Before automation (during process analysis) | After implementation (from code changes) |
 | **Used By** | Interview Agent | Interview Agent, Spec Agent |
 
 ### What PDD Contains
 
-Based on UiPath Task Capture documentation, a PDD includes:
+A well-structured PDD typically includes:
 
 | Section | Purpose |
 |---------|---------|
