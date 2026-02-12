@@ -495,4 +495,4 @@ Determine if invoice requires manager approval based on amount thresholds.
 
 ---
 
-*This document was created using UiPath Task Capture and follows the standard PDD template format.*
+*This document follows the standard PDD template format and can be created using UiPath Task Capture or other process documentation methods.*
