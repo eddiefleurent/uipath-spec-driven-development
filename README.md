@@ -84,6 +84,9 @@ The **Spec Agent** takes approved requirements and:
 
 ### 3. Implementation
 Engineer uses **UiPath Studio + Autopilot**:
+
+![Agentic Engineering Workflow](./images/Agentic-Engineering-Workflow.png)
+
 - Open Plan.md workflow specifications
 - Paste specs into Autopilot to generate workflows
 - Review, refine, and commit to GitLab
@@ -216,6 +219,7 @@ uipath-spec-driven-development/
 │   └── sequence.png          # Process flow diagram
 │
 ├── images/
+│   ├── Agentic-Engineering-Workflow.png     # Engineer's Autopilot workflow visual
 │   ├── Process-Context.png   # PDD vs TDD visual
 │   ├── Prompt-Framework.png  # AI agent prompt framework visual
 │   └── Spec-Driven Development Process.png  # Process flow visual

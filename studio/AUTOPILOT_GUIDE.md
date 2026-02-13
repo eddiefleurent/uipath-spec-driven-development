@@ -34,6 +34,8 @@ This example shows the complete flow from user story through Autopilot implement
 
 ## Workflow: Plan.md → Autopilot → XAML
 
+![Agentic Engineering Workflow](../images/Agentic-Engineering-Workflow.png)
+
 ### Step 1: Open Plan.md
 
 Find the workflow you want to implement. Each workflow spec looks like:
