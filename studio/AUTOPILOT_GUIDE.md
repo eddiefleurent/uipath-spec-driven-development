@@ -6,6 +6,20 @@ Guide for engineers on using UiPath Autopilot to implement workflows from the Sp
 
 The Spec Agent generates Plan.md with detailed workflow specifications. These specs are designed to be **Autopilot-ready**—you can paste them directly into Autopilot to generate workflows.
 
+## Complete End-to-End Example
+
+**See the AI Agent Enhancement example for a full lifecycle demonstration:**
+
+📂 **[examples/ai-agent-enhancement/](../examples/ai-agent-enhancement/)**
+
+This example shows the complete flow from user story through Autopilot implementation:
+1. User Story → Interview Agent → Requirements.md
+2. Requirements.md → Spec Agent → Plan.md + TestScenarios.md
+3. Plan.md → **Autopilot** → Workflows (AnalyzeExceptionWithAI.xaml)
+4. Git Diff → TDD Agent → Updated TDD.md
+
+**Key file:** [06-autopilot-session.md](../examples/ai-agent-enhancement/06-autopilot-session.md) shows step-by-step Autopilot usage with the detailed prompts from Plan.md.
+
 ## Autopilot Capabilities
 
 | Feature | Use Case |

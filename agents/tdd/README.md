@@ -10,6 +10,7 @@ Autonomous agent that updates the Technical Design Document based on workflow ch
 | **Platform** | UiPath Agent Builder |
 | **Input** | Git diff, Plan.md, existing TDD.md |
 | **Output** | Updated TDD.md |
+| **Persona** | Technical Writer who understands XAML and maintains documentation |
 
 ## What It Does
 
@@ -57,7 +58,7 @@ Type: Autonomous
 | Setting | Value |
 |---------|-------|
 | Agent Type | Autonomous |
-| Temperature | 0.2 (deterministic) |
+| Temperature | 0.2-0.3 (highly deterministic for documentation) |
 
 ### 3. System Prompt
 
@@ -116,12 +117,24 @@ Updated TDD.md with:
 
 Updated TDD.md with:
 - New workflows added to Workflows table
-- Detailed specs for new/changed workflows
+- Detailed specs for new/changed workflows (arguments, variables, activities, error handling)
+- AI agent updates (if Plan.md includes new/modified agents)
+- Configuration changes (Config.xlsx, Orchestrator assets)
+- Integration changes (new APIs, systems)
 - Change log entry with date
+
+## Examples
+
+See the complete end-to-end example:
+- [AI Agent Enhancement Example](../../examples/ai-agent-enhancement/) - Full lifecycle including TDD Agent processing
+- [07-git-diff.txt](../../examples/ai-agent-enhancement/07-git-diff.txt) - Sample git diff input
+- [08-tdd-update.md](../../examples/ai-agent-enhancement/08-tdd-update.md) - TDD Agent processing walkthrough
+- [TDD Example v2.0](../../templates/TDD_EXAMPLE.md) - Complete updated TDD.md result
 
 ## Related
 
 - [PROMPTS.md](./PROMPTS.md) - Full system prompts and templates
 - [TDD Template](../../templates/TDD_TEMPLATE.md) - Full TDD structure
-- [Architecture](../../ARCHITECTURE.md) - Overall system design
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) - Overall system design
+- [Main README](../../README.md) - Project overview and quick start
 - [Spec Agent](../spec/README.md) - Creates Plan.md

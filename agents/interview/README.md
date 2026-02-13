@@ -9,8 +9,9 @@ Conversational agent that gathers requirements from user stories through multi-t
 | **Type** | Conversational |
 | **Platform** | UiPath Agent Builder |
 | **UI** | UiPath Apps |
-| **Input** | User Story, PDD.md (required), TDD.md (optional) |
+| **Input** | User Story, PDD.md (required), TDD.md (optional, recommended for existing projects) |
 | **Output** | Requirements.md |
+| **Persona** | BA Expert with 10+ years RPA experience |
 
 ## What It Does
 
@@ -24,12 +25,14 @@ Conversational agent that gathers requirements from user stories through multi-t
 
 ## Key Concept: PDD vs TDD
 
-| Document | Focus | Content |
-|----------|-------|---------|
-| **PDD.md** (required) | AS-IS business process | Process steps, business rules, stakeholders, decisions |
-| **TDD.md** (optional) | Automation architecture | Workflows, activities, error handling, integrations |
+| Document | Focus | Content | Created By |
+|----------|-------|---------|------------|
+| **PDD.md** (required) | AS-IS business process | Process steps, business rules, stakeholders, decisions | Business Analyst (e.g., Task Capture or process workshops) |
+| **TDD.md** (optional, recommended) | Automation architecture | Workflows, activities, error handling, integrations, AI agent prompt framework | TDD Agent (maintained) |
 
 The Interview Agent uses PDD to understand *what the business does today* and TDD to understand *what automation already exists*.
+
+**PDD Creation:** UiPath Task Capture is recommended for comprehensive process capture with screenshots and timing data, but PDDs can also be created through process workshops, interviews, or other documentation methods.
 
 ## Building the Agent
 
@@ -47,7 +50,7 @@ Type: Conversational
 |---------|-------|
 | Agent Type | Conversational |
 | Interaction Mode | Synchronous |
-| Temperature | 0.7 |
+| Temperature | 0.5-0.7 (balanced) |
 
 ### 3. Add System Prompt
 
@@ -120,10 +123,14 @@ See [examples/example_output.md](./examples/example_output.md) for a sample.
 
 ## Examples
 
-- [Example Chat](./examples/example_chat.md) - Sample conversation
-- [Example Output](./examples/example_output.md) - Sample Requirements.md
+See the complete end-to-end example:
+- [AI Agent Enhancement Example](../../examples/ai-agent-enhancement/) - Full lifecycle including Interview Agent session
+- [01-interview-conversation.md](../../examples/ai-agent-enhancement/01-interview-conversation.md) - Sample multi-turn conversation
+- [02-requirements.md](../../examples/ai-agent-enhancement/02-requirements.md) - Sample Requirements.md output
 
 ## Related
 
 - [PROMPTS.md](./PROMPTS.md) - Full system prompts and question templates
-- [Architecture](../../ARCHITECTURE.md) - Overall system design
+- [ARCHITECTURE.md](../../ARCHITECTURE.md) - Overall system design
+- [Main README](../../README.md) - Project overview and quick start
+- [PDD Example](../../templates/PDD_EXAMPLE.md) - Sample Process Definition Document

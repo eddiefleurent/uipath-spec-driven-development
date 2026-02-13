@@ -53,6 +53,7 @@ Detailed technical reference for the SDLC Agents system. For an overview, see [R
 - Decompose into atomic, testable workflows
 - Specify arguments, variables, activities for each workflow
 - Create Autopilot-ready prompts
+- Generate AI agent prompts following the prompt framework from TDD.md (persona, decision framework, guardrails, tools, confidence scoring)
 - Define test scenarios (unit, integration, E2E)
 
 **Tools:**
@@ -128,6 +129,7 @@ The Technical Design Document is the **single source of truth** for project arch
 | Tests | Test inventory and coverage |
 | Configuration | Config.xlsx structure, assets, queues |
 | Integrations | Systems, APIs, credentials |
+| AI Agent Prompt Framework | Agent inventory, prompt scaffolding, tools, knowledge base |
 | Patterns & Standards | Error handling, logging, naming conventions |
 | Change Log | History of modifications |
 

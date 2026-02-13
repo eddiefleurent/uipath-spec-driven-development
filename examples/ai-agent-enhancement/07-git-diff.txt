@@ -1,0 +1,420 @@
+# Git Diff Sample: AI Agent Enhancement
+
+## Context
+This shows the git diff after implementing the AI agent enhancement.
+The TDD Agent would receive this diff and update TDD.md to v2.0.
+
+---
+
+## Command Run by TDD Agent
+
+```bash
+git diff origin/main...HEAD -- "*.xaml" "*.json" "Config.xlsx"
+```
+
+---
+
+## Diff Output
+
+```diff
+diff --git a/InvoiceApproval/AnalyzeExceptionWithAI.xaml b/InvoiceApproval/AnalyzeExceptionWithAI.xaml
+new file mode 100644
+index 0000000..a1b2c3d
+--- /dev/null
++++ b/InvoiceApproval/AnalyzeExceptionWithAI.xaml
+@@ -0,0 +1,287 @@
++<Activity mc:Ignorable="sap sap2010" x:Class="AnalyzeExceptionWithAI"
++  xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities"
++  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
++  xmlns:mva="clr-namespace:Microsoft.VisualBasic.Activities;assembly=System.Activities"
++  xmlns:sap="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"
++  xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
++  xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
++  xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
++  xmlns:njl="clr-namespace:Newtonsoft.Json.Linq;assembly=Newtonsoft.Json"
++  xmlns:uiai="clr-namespace:UiPath.AI.Activities;assembly=UiPath.AI.Activities"
++  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
++  <x:Members>
++    <x:Property Name="in_InvoiceData" Type="InArgument(sd:DataTable)" />
++    <x:Property Name="in_ValidationErrors" Type="InArgument(x:String)" />
++    <x:Property Name="in_POData" Type="InArgument(sd:DataRow)" />
++    <x:Property Name="in_InvoiceFilePath" Type="InArgument(x:String)" />
++    <x:Property Name="in_Config" Type="InArgument(scg:Dictionary(x:String, x:String))" />
++    <x:Property Name="out_RecommendedAction" Type="OutArgument(x:String)" />
++    <x:Property Name="out_Reasoning" Type="OutArgument(x:String)" />
++    <x:Property Name="out_Confidence" Type="OutArgument(x:Double)" />
++    <x:Property Name="out_ExceptionType" Type="OutArgument(x:String)" />
++    <x:Property Name="out_CorrectionData" Type="OutArgument(njl:JObject)" />
++  </x:Members>
++  <mva:VisualBasic.Settings>
++    <x:Null />
++  </mva:VisualBasic.Settings>
++  <sap2010:WorkflowViewState.IdRef>AnalyzeExceptionWithAI_1</sap2010:WorkflowViewState.IdRef>
++  <TextExpression.NamespacesForImplementation>
++    <scg:List x:TypeArguments="x:String" Capacity="54">
++      <x:String>System.Activities</x:String>
++      <x:String>System.Activities.Statements</x:String>
++      <x:String>System.Activities.Expressions</x:String>
++      <x:String>System.Collections.Generic</x:String>
++      <x:String>System.Data</x:String>
++      <x:String>Newtonsoft.Json.Linq</x:String>
++      <x:String>UiPath.AI.Activities</x:String>
++    </scg:List>
++  </TextExpression.NamespacesForImplementation>
++  <Sequence DisplayName="Main Sequence" sap2010:WorkflowViewState.IdRef="Sequence_1">
++    <Sequence.Variables>
++      <Variable x:TypeArguments="x:String" Name="str_AgentSkillName" />
++      <Variable x:TypeArguments="x:String" Name="str_AgentPrompt" />
++      <Variable x:TypeArguments="njl:JObject" Name="obj_AgentContext" />
++      <Variable x:TypeArguments="x:String" Name="str_AgentResponseJSON" />
++      <Variable x:TypeArguments="njl:JObject" Name="obj_AgentResponse" />
++      <Variable x:TypeArguments="x:Double" Name="dbl_ConfidenceThreshold" />
++      <Variable x:TypeArguments="x:Double" Name="dbl_AutoResolveThreshold" />
++      <Variable x:TypeArguments="x:Double" Name="dbl_MaxAutoResolveAmount" />
++      <Variable x:TypeArguments="x:Double" Name="dbl_InvoiceAmount" />
++      <Variable x:TypeArguments="x:Boolean" Name="bool_GuardrailsPassed" />
++    </Sequence.Variables>
++
++    <!-- Log start -->
++    <WriteLine DisplayName="Log: Analyzing exception" Text='["AI Agent: Analyzing exception for invoice " + in_InvoiceData.Rows(0)("InvoiceNumber").ToString]' />
++
++    <!-- Load configuration -->
++    <Assign DisplayName="Load configuration thresholds">
++      <Assign.To>
++        <OutArgument x:TypeArguments="x:Double">[dbl_ConfidenceThreshold]</OutArgument>
++      </Assign.To>
++      <Assign.Value>
++        <InArgument x:TypeArguments="x:Double">[Convert.ToDouble(in_Config("AIConfidenceThreshold"))]</InArgument>
++      </Assign.Value>
++    </Assign>
++    <!-- Additional assigns omitted for brevity -->
++
++    <!-- Try-Catch for graceful degradation -->
++    <TryCatch DisplayName="AI Agent Invocation with Graceful Degradation">
++      <TryCatch.Try>
++        <Sequence DisplayName="Invoke AI Agent">
++
++          <!-- Build AI context -->
++          <Assign DisplayName="Build AI agent context">
++            <Assign.To>
++              <OutArgument x:TypeArguments="njl:JObject">[obj_AgentContext]</OutArgument>
++            </Assign.To>
++            <Assign.Value>
++              <InArgument x:TypeArguments="njl:JObject">[New JObject From {
++                New JProperty("invoice_number", in_InvoiceData.Rows(0)("InvoiceNumber").ToString),
++                New JProperty("invoice_vendor", in_InvoiceData.Rows(0)("VendorName").ToString),
++                New JProperty("invoice_amount", dbl_InvoiceAmount),
++                New JProperty("validation_error", in_ValidationErrors)
++              }]</InArgument>
++            </Assign.Value>
++          </Assign>
++
++          <!-- Build AI prompt -->
++          <Assign DisplayName="Build AI agent prompt">
++            <Assign.To>
++              <OutArgument x:TypeArguments="x:String">[str_AgentPrompt]</OutArgument>
++            </Assign.To>
++            <Assign.Value>
++              <InArgument x:TypeArguments="x:String">["Analyze this invoice validation exception..." + ...]</InArgument>
++            </Assign.Value>
++          </Assign>
++
++          <!-- Invoke AI Agent -->
++          <uiai:InvokeAIAgent DisplayName="Invoke AI Agent"
++            AgentSkillName="[str_AgentSkillName]"
++            InputPrompt="[str_AgentPrompt]"
++            AdditionalContext="[obj_AgentContext.ToString]"
++            Result="[str_AgentResponseJSON]"
++            TimeoutMS="5000" />
++
++          <WriteLine DisplayName="Log: AI response received" Text='["AI Agent response received"]' />
++
++          <!-- Deserialize JSON -->
++          <uiai:DeserializeJson DisplayName="Deserialize AI Response"
++            JsonString="[str_AgentResponseJSON]"
++            JsonObject="[obj_AgentResponse]" />
++
++          <!-- Extract fields -->
++          <Assign DisplayName="Extract AI response fields">
++            <Assign.To>
++              <OutArgument x:TypeArguments="x:String">[out_RecommendedAction]</OutArgument>
++            </Assign.To>
++            <Assign.Value>
++              <InArgument x:TypeArguments="x:String">[obj_AgentResponse("recommended_action").ToString]</InArgument>
++            </Assign.Value>
++          </Assign>
++          <!-- Additional field extractions omitted -->
++
++          <WriteLine DisplayName="Log: AI Recommendation" Text='[String.Format("AI Recommendation: {0} (confidence: {1:P0})", out_RecommendedAction, out_Confidence)]' />
++
++          <!-- Check guardrails -->
++          <If DisplayName="Check guardrails for auto-resolution"
++            Condition="[out_RecommendedAction = &quot;Auto-Resolve&quot; AndAlso out_Confidence &gt;= dbl_AutoResolveThreshold AndAlso dbl_InvoiceAmount &lt;= dbl_MaxAutoResolveAmount]">
++            <If.Then>
++              <Assign DisplayName="Guardrails passed">
++                <Assign.To>
++                  <OutArgument x:TypeArguments="x:Boolean">[bool_GuardrailsPassed]</OutArgument>
++                </Assign.To>
++                <Assign.Value>
++                  <InArgument x:TypeArguments="x:Boolean">True</InArgument>
++                </Assign.Value>
++              </Assign>
++              <WriteLine DisplayName="Log: Guardrails passed" Text='["Guardrails passed, proceeding with auto-resolution"]' />
++            </If.Then>
++            <If.Else>
++              <!-- Guardrail checks and overrides -->
++              <If DisplayName="Check if blocked by amount guardrail" Condition="[dbl_InvoiceAmount &gt; dbl_MaxAutoResolveAmount]">
++                <If.Then>
++                  <Sequence>
++                    <WriteLine DisplayName="Log: Amount guardrail" Text='[String.Format("Auto-resolution blocked: Invoice amount ${0} exceeds limit ${1}", dbl_InvoiceAmount, dbl_MaxAutoResolveAmount)]' />
++                    <Assign DisplayName="Override to manual review">
++                      <Assign.To>
++                        <OutArgument x:TypeArguments="x:String">[out_RecommendedAction]</OutArgument>
++                      </Assign.To>
++                      <Assign.Value>
++                        <InArgument x:TypeArguments="x:String">"Route-to-AP-Manager"</InArgument>
++                      </Assign.Value>
++                    </Assign>
++                  </Sequence>
++                </If.Then>
++              </If>
++            </If.Else>
++          </If>
++
++        </Sequence>
++      </TryCatch.Try>
++      <TryCatch.Catches>
++        <Catch x:TypeArguments="s:Exception" sap2010:WorkflowViewState.IdRef="Catch`1_1">
++          <ActivityAction x:TypeArguments="s:Exception">
++            <ActivityAction.Argument>
++              <DelegateInArgument x:TypeArguments="s:Exception" Name="ex" />
++            </ActivityAction.Argument>
++            <Sequence DisplayName="Graceful degradation">
++              <WriteLine DisplayName="Log: AI Agent failed" Text='["AI Agent failed: " + ex.Message + ". Graceful degradation to manual review."]' />
++              <MultiAssign DisplayName="Fallback to manual review">
++                <Assign>
++                  <Assign.To>
++                    <OutArgument x:TypeArguments="x:String">[out_RecommendedAction]</OutArgument>
++                  </Assign.To>
++                  <Assign.Value>
++                    <InArgument x:TypeArguments="x:String">"Route-to-AP-Manager"</InArgument>
++                  </Assign.Value>
++                </Assign>
++                <Assign>
++                  <Assign.To>
++                    <OutArgument x:TypeArguments="x:String">[out_Reasoning]</OutArgument>
++                  </Assign.To>
++                  <Assign.Value>
++                    <InArgument x:TypeArguments="x:String">["AI agent unavailable. Manual review required. Original error: " + in_ValidationErrors]</InArgument>
++                  </Assign.Value>
++                </Assign>
++                <Assign>
++                  <Assign.To>
++                    <OutArgument x:TypeArguments="x:Double">[out_Confidence]</OutArgument>
++                  </Assign.To>
++                  <Assign.Value>
++                    <InArgument x:TypeArguments="x:Double">0.0</InArgument>
++                  </Assign.Value>
++                </Assign>
++              </MultiAssign>
++            </Sequence>
++          </ActivityAction>
++        </Catch>
++      </TryCatch.Catches>
++      <TryCatch.Finally>
++        <WriteLine DisplayName="Log: Workflow completed" Text='["AI Agent workflow completed"]' />
++      </TryCatch.Finally>
++    </TryCatch>
++
++  </Sequence>
++</Activity>
++
++diff --git a/InvoiceApproval/Framework/Process.xaml b/InvoiceApproval/Framework/Process.xaml
+index e4f5g6h..i7j8k9l 100644
++--- a/InvoiceApproval/Framework/Process.xaml
+++++ b/InvoiceApproval/Framework/Process.xaml
++@@ -45,6 +45,13 @@
++     <Variable x:TypeArguments="sd:DataTable" Name="dt_InvoiceData" />
++     <Variable x:TypeArguments="x:String" Name="str_ValidationErrors" />
++     <Variable x:TypeArguments="sd:DataRow" Name="dr_POData" />
+++    <!-- NEW VARIABLES FOR AI AGENT -->
+++    <Variable x:TypeArguments="x:String" Name="str_AIRecommendation" />
+++    <Variable x:TypeArguments="x:String" Name="str_AIReasoning" />
+++    <Variable x:TypeArguments="x:Double" Name="dbl_AIConfidence" />
+++    <Variable x:TypeArguments="x:String" Name="str_ExceptionType" />
+++    <Variable x:TypeArguments="njl:JObject" Name="obj_CorrectionData" />
+++    <Variable x:TypeArguments="x:String" Name="str_QBReference" />
++   </Sequence.Variables>
++
++   <!-- Existing workflow steps -->
++@@ -89,15 +96,89 @@
++       out_IsValid="[bool_ValidationPassed]"
++       out_ValidationErrors="[str_ValidationErrors]" />
++
++-  <!-- OLD: Direct exception routing -->
++-  <If DisplayName="Check validation result" Condition="[Not bool_ValidationPassed]">
+++  <!-- NEW: AI Exception Analysis -->
+++  <If DisplayName="Check validation result" Condition="[bool_ValidationPassed]">
++     <If.Then>
++-      <Sequence DisplayName="Add to exception queue">
++-        <AddQueueItem QueueName="InvoiceExceptions" ItemInformation="[...]" />
++-        <SetTransactionStatus Status="BusinessRuleException" />
+++      <!-- Happy path: validation passed, continue to approval check -->
+++      <InvokeWorkflowFile DisplayName="CheckApprovalThreshold" WorkflowFileName="CheckApprovalThreshold.xaml" />
+++      <InvokeWorkflowFile DisplayName="UploadToQuickBooks" WorkflowFileName="UploadToQuickBooks.xaml" />
+++    </If.Then>
+++    <If.Else>
+++      <!-- Validation failed: invoke AI agent for exception analysis -->
+++      <Sequence DisplayName="AI Exception Analysis">
+++        <WriteLine DisplayName="Log: Validation failed, invoking AI" Text='["Validation failed, invoking AI agent for exception analysis"]' />
+++
+++        <!-- Invoke AI Agent Workflow -->
+++        <InvokeWorkflowFile DisplayName="AnalyzeExceptionWithAI"
+++          WorkflowFileName="AnalyzeExceptionWithAI.xaml">
+++          <InvokeWorkflowFile.Arguments>
+++            <InArgument x:TypeArguments="sd:DataTable" x:Key="in_InvoiceData">[dt_InvoiceData]</InArgument>
+++            <InArgument x:TypeArguments="x:String" x:Key="in_ValidationErrors">[str_ValidationErrors]</InArgument>
+++            <InArgument x:TypeArguments="sd:DataRow" x:Key="in_POData">[dr_POData]</InArgument>
+++            <InArgument x:TypeArguments="x:String" x:Key="in_InvoiceFilePath">[str_InvoiceFilePath]</InArgument>
+++            <InArgument x:TypeArguments="scg:Dictionary(x:String, x:String)" x:Key="in_Config">[in_Config]</InArgument>
+++            <OutArgument x:TypeArguments="x:String" x:Key="out_RecommendedAction">[str_AIRecommendation]</OutArgument>
+++            <OutArgument x:TypeArguments="x:String" x:Key="out_Reasoning">[str_AIReasoning]</OutArgument>
+++            <OutArgument x:TypeArguments="x:Double" x:Key="out_Confidence">[dbl_AIConfidence]</OutArgument>
+++            <OutArgument x:TypeArguments="x:String" x:Key="out_ExceptionType">[str_ExceptionType]</OutArgument>
+++            <OutArgument x:TypeArguments="njl:JObject" x:Key="out_CorrectionData">[obj_CorrectionData]</OutArgument>
+++          </InvokeWorkflowFile.Arguments>
+++        </InvokeWorkflowFile>
+++
+++        <!-- Handle AI recommendation -->
+++        <Switch DisplayName="Handle AI recommendation" Expression="[str_AIRecommendation]">
+++
+++          <!-- CASE: Auto-Resolve -->
+++          <Switch.Case x:TypeArguments="x:String" Value="Auto-Resolve">
+++            <Sequence DisplayName="Auto-resolve exception">
+++              <WriteLine DisplayName="Log: AI auto-resolving" Text='["AI auto-resolving exception: " + str_AIReasoning]' />
+++
+++              <!-- Apply correction based on exception type -->
+++              <Switch DisplayName="Apply correction" Expression="[str_ExceptionType]">
+++                <Switch.Case x:TypeArguments="x:String" Value="VendorAlias">
+++                  <Sequence>
+++                    <Assign DisplayName="Update vendor name">
+++                      <Assign.To>
+++                        <OutArgument x:TypeArguments="x:String">[dt_InvoiceData.Rows(0)("VendorName")]</OutArgument>
+++                      </Assign.To>
+++                      <Assign.Value>
+++                        <InArgument x:TypeArguments="x:String">[obj_CorrectionData("corrected_vendor_name").ToString]</InArgument>
+++                      </Assign.Value>
+++                    </Assign>
+++                    <WriteLine Text='["Vendor name corrected to " + obj_CorrectionData("corrected_vendor_name").ToString]' />
+++                  </Sequence>
+++                </Switch.Case>
+++                <Switch.Case x:TypeArguments="x:String" Value="AmountMismatch">
+++                  <WriteLine Text='["Amount mismatch within tolerance: " + obj_CorrectionData("tolerance_applied").ToString + "%"]' />
+++                </Switch.Case>
+++              </Switch>
+++
+++              <!-- Upload to QuickBooks -->
+++              <InvokeWorkflowFile DisplayName="UploadToQuickBooks" WorkflowFileName="UploadToQuickBooks.xaml"
+++                in_InvoiceData="[dt_InvoiceData]"
+++                out_QBReferenceNumber="[str_QBReference]" />
+++              <WriteLine Text='["AI auto-resolved invoice uploaded to QuickBooks: " + str_QBReference]' />
+++              <SetTransactionStatus Status="Success" />
+++            </Sequence>
+++          </Switch.Case>
+++
+++          <!-- CASE: Auto-Reject -->
+++          <Switch.Case x:TypeArguments="x:String" Value="Auto-Reject">
+++            <Sequence>
+++              <WriteLine Text='["AI auto-rejecting invoice: " + str_AIReasoning]' />
+++              <SetTransactionStatus Status="BusinessRuleException" Reason="Duplicate invoice (AI detected)" />
+++            </Sequence>
+++          </Switch.Case>
+++
+++          <!-- DEFAULT: Route to manual review -->
+++          <Switch.Default>
+++            <Sequence DisplayName="Route to manual review">
+++              <WriteLine Text='["Routing to manual review: " + str_AIReasoning]' />
+++              <AddQueueItem QueueName="InvoiceExceptions"
+++                ItemInformation='[New Dictionary(Of String, Object) From {{"InvoiceNumber", dt_InvoiceData.Rows(0)("InvoiceNumber").ToString}, {"AIRecommendation", str_AIRecommendation}, {"AIReasoning", str_AIReasoning}, {"AIConfidence", dbl_AIConfidence.ToString("P0")}}]' />
+++              <SetTransactionStatus Status="BusinessRuleException" />
+++            </Sequence>
+++          </Switch.Default>
+++        </Switch>
++       </Sequence>
++-    </If.Then>
++-    <If.Else>
++-      <!-- Happy path continues -->
++     </If.Else>
++   </If>
++
++@@ -105,3 +186,4 @@
++
++ diff --git a/InvoiceApproval/Data/Config.xlsx b/InvoiceApproval/Data/Config.xlsx
++ index m1n2o3p..q4r5s6t 100644
++ Binary files differ
++
++ Settings sheet additions:
++ + AIAgentSkillName | InvoiceExceptionAnalyzer
++ + AIAgentTimeout | 5
++ + AIConfidenceThreshold | 0.75
++ + AIAutoResolveThreshold | 0.85
++ + AIMaxAutoResolveAmount | 5000
++ + AIAmountTolerancePercent | 5
++ + AIShadowMode | false
++
++ Assets sheet additions:
++ + AIAgentAPIKey | Text | API key for UiPath Agent Builder
++
++ diff --git a/InvoiceApproval/project.json b/InvoiceApproval/project.json
++ index t7u8v9w..x1y2z3a 100644
++ --- a/InvoiceApproval/project.json
++ +++ b/InvoiceApproval/project.json
++ @@ -12,6 +12,9 @@
++      "UiPath.WebAPI.Activities": "1.18.0",
++      "UiPath.IntelligentOCR.Activities": "7.4.0",
++      "UiPath.Mail.Activities": "1.23.0"
+++    "UiPath.AI.Activities": "2.0.0"
++    },
++    "webServices": [],
++-   "entitiesStores": []
+++   "entitiesStores": [],
+++   "schemaVersion": "4.0"
++  }
++
++```
++
++---
+
++## Summary of Changes
++
++**New Files:**
++- `AnalyzeExceptionWithAI.xaml` - AI agent invocation workflow (287 lines)
++
++**Modified Files:**
++- `Framework/Process.xaml` - Added AI exception analysis logic (141 lines added)
++- `Data/Config.xlsx` - Added 7 new AI-related settings
++- `project.json` - Added UiPath.AI.Activities v2.0.0 dependency
++
++**Total Impact:**
++- +428 lines of code
++- +1 new workflow
++- +7 configuration settings
++- +1 package dependency
++
++---
+
++## TDD Agent Processing
++
++The TDD Agent would:
++1. Read this diff
++2. Cross-reference with Plan.md to understand the changes
++3. Update TDD.md with:
++   - New workflow entry (AnalyzeExceptionWithAI.xaml)
++   - Updated Process.xaml logic
++   - New configuration settings
++   - New integration (UiPath Agent Builder)
++   - Updated architecture diagram
++   - Version bump (1.0 → 2.0)
++
++See 08-tdd-update.md for the TDD Agent's output.
++
