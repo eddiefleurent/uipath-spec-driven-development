@@ -47,7 +47,7 @@ TDD.md (optional) ─────┘                     Spec Agent → Plan.md 
 |--------|--------|--------|
 | **Focus** | AS-IS business process | Automation architecture |
 | **Content** | Process steps, business rules, stakeholders | Workflows, activities, integrations |
-| **Created By** | Business Analyst + Task Capture | TDD Agent |
+| **Created By** | Business Analyst (e.g., using Task Capture) | TDD Agent |
 | **Required** | Yes (for Interview Agent) | Optional (for existing projects) |
 
 ### Architecture Patterns
