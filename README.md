@@ -1,8 +1,14 @@
 # Spec-Driven Development for UiPath
 
-AI-powered agents that help engineers go from user story to UiPath workflows. Write the spec, let AI generate the implementation.
+AI agents that participate in your SDLC—gathering requirements, writing specs, and keeping documentation in sync—so engineers can focus on building.
 
-## The Problem
+## Why AI Agents in the SDLC?
+
+Most of the work between a user story and production code isn't coding—it's the overhead around it: interviewing stakeholders, writing specs, choosing architecture patterns, documenting what was built. These are structured, repeatable tasks that AI agents can handle when given the right context.
+
+This project demonstrates that pattern with three AI agents built in UiPath Agent Builder that automate the requirements-to-implementation pipeline for UiPath workflow development. The same approach—specialized agents with structured context—applies to any SDLC.
+
+## The Problem They Solve
 
 Turning user stories into production-ready UiPath workflows involves:
 - Gathering detailed requirements (often incomplete in tickets)
@@ -12,29 +18,47 @@ Turning user stories into production-ready UiPath workflows involves:
 
 This is time-consuming and error-prone, especially for complex automations.
 
-## The Solution
+## The Key Insight: Context Engineering
 
-Three conversational agents built with UiPath Agent Builder that automate the requirements-to-implementation pipeline:
+AI agents are only as good as the context they receive. Two documents give these agents everything they need to make informed decisions:
 
-| Agent | Role | Input | Output |
-|-------|------|-------|--------|
-| **Interview Agent** | BA Expert | User Story + PDD.md (required) + TDD.md (optional) | Requirements.md |
-| **Spec Agent** | Solution Architect | Requirements.md + TDD.md | Plan.md + TestScenarios.md |
-| **TDD Agent** | Technical Writer | Git diff + Plan.md | Updated TDD.md |
+![Process Context](./images/Process-Context.png)
 
-Engineers use **UiPath Studio + Autopilot** to implement workflows from Plan.md.
+### PDD.md - Business Process
+The Process Definition Document captures the **AS-IS business process**—what humans do today before automation. It contains:
 
-## Architecture
+- Process steps and workflow diagrams
+- Business rules and decision points
+- Stakeholders and their roles
+- Exception scenarios
+- Process statistics (volume, duration)
 
-![High-Level Architecture](./architecture.png)
+**Creation Methods**: UiPath Task Capture is recommended for comprehensive process capture with screenshots and timing data, but PDDs can also be created through process workshops, interviews, or other documentation methods.
 
-## Process Flow
+The Interview Agent reads PDD and extracts **only the relevant context** for each user story into Requirements.md.
 
-![Process Flow](./sequence.png)
+### TDD.md - Automation Architecture
+The Technical Design Document (not Test-Driven Development) captures **existing automation architecture**:
+
+- Existing workflows and their responsibilities
+- Architecture patterns in use
+- Coding standards and conventions
+- Integration details
+
+Without TDD context, agents might suggest incompatible approaches. With it, they can say "modify existing X" vs "create new Y".
+
+| Document | Focus | Created By | Used By |
+|----------|-------|------------|---------|
+| **PDD.md** | AS-IS business process | Business Analyst (e.g., using Task Capture) | Interview Agent |
+| **TDD.md** | Automation architecture | TDD Agent | Interview Agent, Spec Agent |
 
 ## How It Works
 
-### 0. Process Documentation (Required)
+Three agents built with UiPath Agent Builder automate the requirements-to-implementation pipeline:
+
+![Spec-Driven Development Process](./images/Spec-Driven%20Development%20Process.png)
+
+### 0. Process Documentation
 Before starting, ensure you have:
 - **PDD.md**: Process Definition Document capturing the AS-IS business process
   - Documents the AS-IS business process (what humans do today)
@@ -68,39 +92,22 @@ The **TDD Agent** receives git diff and:
 - Updates TDD.md with new/changed workflow documentation
 - Maintains the project's single source of truth
 
-## Resources
+## Architecture
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/eddiefleurent/uipath-spec-driven-development) **Ask DeepWiki about this codebase** — AI-powered Q&A for understanding the three-agent system, process flow, and implementation details.
+### High-Level Architecture
 
-## Key Concept: Process Context
+![High-Level Architecture](./diagrams/architecture.png)
 
-### PDD.md (Required) - Business Process
-The Process Definition Document captures the **AS-IS business process**—what humans do today before automation. It contains:
+| Agent/Step | Role | Input | Output |
+|-------|------|-------|--------|
+| **Interview Agent** | BA Expert | • User Story<br>• PDD.md (required)<br>• TDD.md (optional) | • Requirements.md |
+| **Spec Agent** | Solution Architect | • Requirements.md<br>• TDD.md | • Plan.md<br>• TestScenarios.md |
+| **Engineer + Autopilot** | Implementation | • Plan.md<br>• TestScenarios.md | • Workflows (.xaml) |
+| **TDD Agent** | Technical Writer | • Git diff<br>• Plan.md | • Updated TDD.md |
 
-- Process steps and workflow diagrams
-- Business rules and decision points
-- Stakeholders and their roles
-- Exception scenarios
-- Process statistics (volume, duration)
+### End-to-End Process Flow
 
-**Creation Methods**: UiPath Task Capture is recommended for comprehensive process capture with screenshots and timing data, but PDDs can also be created through process workshops, interviews, or other documentation methods.
-
-The Interview Agent reads PDD and extracts **only the relevant context** for each user story into Requirements.md.
-
-### TDD.md (Optional) - Automation Architecture
-The Technical Design Document (not Test-Driven Development) captures **existing automation architecture**:
-
-- Existing workflows and their responsibilities
-- Architecture patterns in use
-- Coding standards and conventions
-- Integration details
-
-Without TDD context, agents might suggest incompatible approaches. With it, they can say "modify existing X" vs "create new Y".
-
-| Document | Focus | Created By | Used By |
-|----------|-------|------------|---------|
-| **PDD.md** | AS-IS business process | Business Analyst (e.g., using Task Capture) | Interview Agent |
-| **TDD.md** | Automation architecture | TDD Agent | Interview Agent, Spec Agent |
+![Process Flow](./diagrams/sequence.png)
 
 ## Quick Start
 
@@ -114,6 +121,7 @@ Without TDD context, agents might suggest incompatible approaches. With it, they
 2. **Set up project documentation (For existing projects)**
    - Create TDD.md using the [template](./templates/TDD_TEMPLATE.md)
    - Document your existing automation architecture
+   - See [templates/TDD_EXAMPLE.md](./templates/TDD_EXAMPLE.md) for reference format
 
 3. **Build the Interview Agent**
    - Follow [agents/interview/README.md](./agents/interview/README.md)
@@ -138,6 +146,7 @@ Without TDD context, agents might suggest incompatible approaches. With it, they
 | [Autopilot Guide](./studio/AUTOPILOT_GUIDE.md) | Using Autopilot with Plan.md |
 | [PDD Example](./templates/PDD_EXAMPLE.md) | Sample Process Definition Document |
 | [TDD Template](./templates/TDD_TEMPLATE.md) | Project documentation template |
+| [TDD Example](./templates/TDD_EXAMPLE.md) | Sample Technical Design Document |
 
 ## Prerequisites
 
@@ -146,15 +155,32 @@ Without TDD context, agents might suggest incompatible approaches. With it, they
 - UiPath Autopilot enabled
 - GitLab (or other VCS) for version control
 
+## Artifacts
+
+| Artifact | Created By | Used By |
+|----------|------------|---------|
+| PDD.md | Business Analyst (e.g., using Task Capture) | Interview Agent |
+| TDD.md | TDD Agent (maintained) | Interview Agent, Spec Agent |
+| Requirements.md | Interview Agent | Spec Agent, Engineer |
+| Plan.md | Spec Agent | Engineer (Autopilot), TDD Agent |
+| TestScenarios.md | Spec Agent | Engineer |
+| Workflows (.xaml) | Engineer + Autopilot | TDD Agent, GitLab |
+
 ## Project Structure
 
 ```
 uipath-spec-driven-development/
 ├── README.md                 # This file - start here
 ├── ARCHITECTURE.md           # Detailed technical reference
-├── architecture.puml         # Diagram source (PlantUML)
-├── architecture.png          # High-level architecture diagram
-├── sequence.png              # Process flow diagram
+│
+├── diagrams/
+│   ├── architecture.puml     # Diagram source (PlantUML)
+│   ├── architecture.png      # High-level architecture diagram
+│   └── sequence.png          # Process flow diagram
+│
+├── images/
+│   ├── Process-Context.png   # PDD vs TDD visual
+│   └── Spec-Driven Development Process.png  # Process flow visual
 │
 ├── agents/
 │   ├── interview/            # Interview Agent
@@ -171,19 +197,13 @@ uipath-spec-driven-development/
 │
 ├── templates/
 │   ├── PDD_EXAMPLE.md        # Sample Process Definition Document
-│   └── TDD_TEMPLATE.md       # Project documentation template
+│   ├── TDD_TEMPLATE.md       # Project documentation template
+│   └── TDD_EXAMPLE.md        # Sample Technical Design Document
 │
 └── studio/
     └── AUTOPILOT_GUIDE.md    # Using Autopilot with Plan.md
 ```
 
-## Artifacts
+## Resources
 
-| Artifact | Created By | Used By |
-|----------|------------|---------|
-| PDD.md | Business Analyst (e.g., using Task Capture) | Interview Agent |
-| TDD.md | TDD Agent (maintained) | Interview Agent, Spec Agent |
-| Requirements.md | Interview Agent | Spec Agent, Engineer |
-| Plan.md | Spec Agent | Engineer (Autopilot), TDD Agent |
-| TestScenarios.md | Spec Agent | Engineer |
-| Workflows (.xaml) | Engineer + Autopilot | TDD Agent, GitLab |
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/eddiefleurent/uipath-spec-driven-development) **Ask DeepWiki about this codebase** — AI-powered Q&A for understanding the three-agent system, process flow, and implementation details.
