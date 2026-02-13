@@ -44,8 +44,9 @@ The Technical Design Document (not Test-Driven Development) captures **existing 
 - Architecture patterns in use
 - Coding standards and conventions
 - Integration details
+- **AI Agent Prompt Framework** — scaffolding for agent prompts (persona, decision framework, guardrails, tools, confidence scoring)
 
-Without TDD context, agents might suggest incompatible approaches. With it, they can say "modify existing X" vs "create new Y".
+Without TDD context, agents might suggest incompatible approaches. With it, they can say "modify existing X" vs "create new Y". For projects using AI agents, the prompt framework ensures the Spec Agent generates consistent, project-aligned agent prompts.
 
 | Document | Focus | Created By | Used By |
 |----------|-------|------------|---------|
@@ -78,6 +79,7 @@ The **Spec Agent** takes approved requirements and:
 - Determines optimal architecture (REFramework, Dispatcher-Performer, etc.)
 - Decomposes into atomic, testable workflows
 - Creates detailed Plan.md with Autopilot-ready prompts
+- Generates AI agent prompts using the prompt framework from TDD.md (when project uses agents)
 - Generates TestScenarios.md for testing
 
 ### 3. Implementation
@@ -101,13 +103,47 @@ The **TDD Agent** receives git diff and:
 | Agent/Step | Role | Input | Output |
 |-------|------|-------|--------|
 | **Interview Agent** | BA Expert | • User Story<br>• PDD.md (required)<br>• TDD.md (optional) | • Requirements.md |
-| **Spec Agent** | Solution Architect | • Requirements.md<br>• TDD.md | • Plan.md<br>• TestScenarios.md |
+| **Spec Agent** | Solution Architect | • Requirements.md<br>• TDD.md (incl. prompt framework) | • Plan.md (incl. agent prompts)<br>• TestScenarios.md |
 | **Engineer + Autopilot** | Implementation | • Plan.md<br>• TestScenarios.md | • Workflows (.xaml) |
 | **TDD Agent** | Technical Writer | • Git diff<br>• Plan.md | • Updated TDD.md |
 
 ### End-to-End Process Flow
 
 ![Process Flow](./diagrams/sequence.png)
+
+## AI Agent Prompt Framework
+
+For projects that use AI agents, the TDD includes a **prompt framework** — standardized scaffolding that defines how all agent prompts in the project should be structured. The Spec Agent reads this framework when generating new agent prompts in Plan.md, ensuring consistency across agents.
+
+![Prompt Framework](./images/Prompt-Framework.png)
+
+Without this framework, each agent prompt is designed from scratch. With it, the Spec Agent produces prompts that fit the project's established patterns — same structure, same guardrail conventions, same escalation triggers, same confidence scales.
+
+See the [TDD Template](./templates/TDD_TEMPLATE.md) (Section 7) for the scaffolding structure, and the [TDD Example](./templates/TDD_EXAMPLE.md) (Section 7) for a filled-in example.
+
+## Complete Example: AI Agent Enhancement
+
+Want to see the full system in action? Check out the **AI Agent Enhancement** example that demonstrates the entire lifecycle:
+
+📂 **[examples/ai-agent-enhancement/](./examples/ai-agent-enhancement/)**
+
+This example shows how to add an AI-powered exception analysis component to an existing Invoice Approval automation:
+
+| Step | Artifact | Description |
+|------|----------|-------------|
+| 1 | [00-user-story.md](./examples/ai-agent-enhancement/00-user-story.md) | Product owner's enhancement request |
+| 2 | [01-interview-conversation.md](./examples/ai-agent-enhancement/01-interview-conversation.md) | How Interview Agent gathers requirements using PDD/TDD context |
+| 3 | [02-requirements.md](./examples/ai-agent-enhancement/02-requirements.md) | Interview Agent output with focused requirements |
+| 4 | [03-spec-conversation.md](./examples/ai-agent-enhancement/03-spec-conversation.md) | How Spec Agent designs the solution |
+| 5 | [04-plan.md](./examples/ai-agent-enhancement/04-plan.md) | **Autopilot-ready prompts** for RPA workflows + AI agent configuration |
+| 6 | [05-test-scenarios.md](./examples/ai-agent-enhancement/05-test-scenarios.md) | Comprehensive test scenarios |
+| 7 | [06-autopilot-session.md](./examples/ai-agent-enhancement/06-autopilot-session.md) | **Step-by-step Autopilot usage** to build workflows |
+| 8 | [07-git-diff.txt](./examples/ai-agent-enhancement/07-git-diff.txt) | Sample workflow changes |
+| 9 | [08-tdd-update.md](./examples/ai-agent-enhancement/08-tdd-update.md) | How TDD Agent updates documentation |
+
+**Key Highlight:** This example shows how the Spec Agent creates prompts for BOTH:
+- **RPA workflows** (Autopilot prompts for AnalyzeExceptionWithAI.xaml)
+- **AI agent configuration** (Agent Builder prompts for InvoiceExceptionAnalyzer agent)
 
 ## Quick Start
 
@@ -172,6 +208,7 @@ The **TDD Agent** receives git diff and:
 uipath-spec-driven-development/
 ├── README.md                 # This file - start here
 ├── ARCHITECTURE.md           # Detailed technical reference
+├── CLAUDE.md                 # Instructions for Claude Code
 │
 ├── diagrams/
 │   ├── architecture.puml     # Diagram source (PlantUML)
@@ -180,20 +217,32 @@ uipath-spec-driven-development/
 │
 ├── images/
 │   ├── Process-Context.png   # PDD vs TDD visual
+│   ├── Prompt-Framework.png  # AI agent prompt framework visual
 │   └── Spec-Driven Development Process.png  # Process flow visual
 │
 ├── agents/
 │   ├── interview/            # Interview Agent
 │   │   ├── README.md         # Setup guide
-│   │   ├── PROMPTS.md        # System prompts
-│   │   └── examples/         # Sample chat and output
+│   │   └── PROMPTS.md        # System prompts
 │   ├── spec/                 # Spec Agent
 │   │   ├── README.md         # Setup guide
-│   │   ├── PROMPTS.md        # System prompts
-│   │   └── examples/         # Sample plan output
+│   │   └── PROMPTS.md        # System prompts
 │   └── tdd/                  # TDD Agent
 │       ├── README.md         # Setup guide
 │       └── PROMPTS.md        # System prompts
+│
+├── examples/
+│   └── ai-agent-enhancement/ # Complete end-to-end example
+│       ├── README.md                        # Example overview
+│       ├── 00-user-story.md                 # Initial user story
+│       ├── 01-interview-conversation.md     # Interview agent conversation
+│       ├── 02-requirements.md               # Requirements output
+│       ├── 03-spec-conversation.md          # Spec agent conversation
+│       ├── 04-plan.md                       # Plan with Autopilot prompts
+│       ├── 05-test-scenarios.md             # Test scenarios
+│       ├── 06-autopilot-session.md          # Autopilot implementation guide
+│       ├── 07-git-diff.txt                  # Sample workflow changes
+│       └── 08-tdd-update.md                 # TDD documentation update
 │
 ├── templates/
 │   ├── PDD_EXAMPLE.md        # Sample Process Definition Document

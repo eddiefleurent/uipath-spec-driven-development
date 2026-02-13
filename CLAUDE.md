@@ -46,9 +46,9 @@ TDD.md (optional) ─────┘                     Spec Agent → Plan.md 
 | Aspect | PDD.md | TDD.md |
 |--------|--------|--------|
 | **Focus** | AS-IS business process | Automation architecture |
-| **Content** | Process steps, business rules, stakeholders | Workflows, activities, integrations |
-| **Created By** | Business Analyst (e.g., using Task Capture) | TDD Agent |
-| **Required** | Yes (for Interview Agent) | Optional (for existing projects) |
+| **Content** | Process steps, business rules, stakeholders | Workflows, activities, integrations, AI agent prompt framework |
+| **Created By** | Business Analyst (Task Capture recommended, or process workshops/interviews) | TDD Agent (maintained) |
+| **Required** | Yes (for Interview Agent) | Optional but recommended (for existing projects) |
 
 ### Architecture Patterns
 
@@ -70,10 +70,14 @@ The Spec Agent selects patterns based on requirements:
 Each agent has its own directory under `agents/` with:
 - `README.md` - Setup guide for building the agent in UiPath Agent Builder
 - `PROMPTS.md` - System prompts and templates to configure the agent
-- `examples/` - Sample inputs/outputs showing the agent in action
+
+### Examples
+- `examples/ai-agent-enhancement/` - Complete end-to-end example showing how to enhance an existing automation with AI-powered exception analysis (includes all artifacts from user story through TDD update)
 
 ### Templates & Guides
+- `templates/PDD_EXAMPLE.md` - Sample Process Definition Document
 - `templates/TDD_TEMPLATE.md` - Template for documenting UiPath projects
+- `templates/TDD_EXAMPLE.md` - Sample Technical Design Document (result of TDD Agent processing)
 - `studio/AUTOPILOT_GUIDE.md` - Guide for using UiPath Autopilot with Plan.md specs
 
 ## Key Artifacts (Not in This Repo)
@@ -82,12 +86,13 @@ These are created by engineers using the agents:
 
 | Artifact | Created By | Used By |
 |----------|------------|---------|
-| PDD.md | Business Analyst + Task Capture | Interview Agent |
+| PDD.md | Business Analyst (Task Capture recommended, or process workshops/interviews) | Interview Agent |
 | TDD.md | TDD Agent (maintained) | Interview Agent, Spec Agent |
 | Requirements.md | Interview Agent | Spec Agent, Engineer |
 | Plan.md | Spec Agent | Engineer (Autopilot), TDD Agent |
 | TestScenarios.md | Spec Agent | Engineer |
 | Workflows (.xaml) | Engineer + Autopilot | TDD Agent, GitLab |
+| AI Agents | Engineer + Agent Builder (using prompts from Plan.md) | UiPath workflows |
 
 ## Common Tasks
 
@@ -113,7 +118,15 @@ When updating `templates/TDD_TEMPLATE.md`:
 1. This is read by Interview and Spec agents as project context
 2. Changes affect how agents understand existing projects
 3. Keep the structure consistent with agent expectations
-4. Sections: Project Overview, Architecture, Workflows, Tests, Configuration, Integrations, Patterns & Standards, Change Log
+4. Sections: Project Overview, Architecture, Workflows, Tests, Configuration, Integrations, AI Agent Prompt Framework, Patterns & Standards, Change Log
+
+**AI Agent Prompt Framework (Section 7):**
+- For projects using AI agents built in UiPath Agent Builder
+- Defines standardized scaffolding for all agent prompts in the project
+- Elements: Persona, Context Block, Task Definition, Decision Framework, Guardrails, Confidence Scoring, Output Format, Tools, Knowledge Base
+- Spec Agent reads this framework and generates new agent prompts following the project's established patterns
+- See `templates/TDD_TEMPLATE.md` (Section 7) for scaffolding structure
+- See `templates/TDD_EXAMPLE.md` (Section 7) for a filled-in example
 
 ## UiPath-Specific Context
 
@@ -169,7 +182,10 @@ The Spec Agent creates "Autopilot-ready" prompts in Plan.md. Engineers paste the
 ## Important Notes
 
 1. **No Code Here**: This repo contains documentation, prompts, and templates only
-2. **Agent Builder Setup**: Agents are built in UiPath Agent Builder (separate platform)
+2. **Agent Builder Setup**: The three system agents (Interview, Spec, TDD) are built in UiPath Agent Builder (separate platform)
 3. **Studio + Autopilot**: Actual workflow implementation happens in UiPath Studio
 4. **TDD.md is Critical**: Without project context (TDD.md), agents cannot make appropriate recommendations
 5. **This is Not TDD**: TDD.md = Technical Design Document, not Test-Driven Development
+6. **PDD Creation Flexibility**: UiPath Task Capture is recommended but not required—PDDs can be created through process workshops, interviews, or other documentation methods
+7. **AI Agent Prompt Framework**: For projects using AI agents, TDD.md Section 7 defines prompt scaffolding that ensures consistent agent design across the project
+8. **Complete Example Available**: See `examples/ai-agent-enhancement/` for end-to-end lifecycle demonstration

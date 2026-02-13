@@ -174,9 +174,162 @@
 
 ---
 
-## 7. Patterns & Standards
+## 7. AI Agent Prompt Framework
 
-### 7.1 Naming Conventions
+> This section defines the prompt scaffolding for AI agents used in this project. The Spec Agent references this section when generating new agent prompts to ensure consistency with established project patterns.
+
+### 7.1 Agent Inventory
+
+| Agent Name | Purpose | Platform | Invoked By |
+|------------|---------|----------|------------|
+| [AgentName] | [What the agent does] | UiPath Agent Builder | [Workflow or trigger] |
+
+### 7.2 Prompt Scaffolding
+
+> All AI agent system prompts in this project follow this structure. When the Spec Agent creates a new agent prompt, it must conform to this scaffolding.
+
+#### Persona
+
+| Property | Value |
+|----------|-------|
+| **Role** | [Job title / expertise area] |
+| **Experience Level** | [Years / seniority context] |
+| **Tone** | [Professional / concise / analytical] |
+
+#### Context Block
+
+Define what the agent receives at runtime:
+
+```
+You are a [Persona.Role] with [Persona.Experience].
+
+CONTEXT:
+You receive [describe input source and trigger condition].
+[Additional background the agent needs to understand its operating environment.]
+```
+
+#### Task Definition
+
+Numbered steps the agent must perform on every invocation:
+
+```
+YOUR TASK:
+1. [First analysis step]
+2. [Classification or categorization step]
+3. [Decision or recommendation step]
+4. [Evidence/reasoning step]
+5. [Confidence assessment step]
+```
+
+#### Decision Framework
+
+Per-scenario logic with specific criteria and thresholds:
+
+| Scenario | Criteria | Recommended Action | Confidence Range |
+|----------|----------|--------------------|------------------|
+| [Scenario 1] | [Specific conditions / thresholds] | [Action] | [Expected range] |
+| [Scenario 2] | [Specific conditions / thresholds] | [Action] | [Expected range] |
+
+> Include which tools the agent should use for each scenario.
+
+#### Guardrails
+
+**Hard Limits** (enforced by both agent prompt and RPA workflow):
+
+| Rule | Rationale |
+|------|-----------|
+| [Rule description with specific threshold] | [Why this limit exists] |
+
+**Soft Limits** (agent should respect, RPA enforces as backup):
+
+| Rule | Rationale |
+|------|-----------|
+| [Rule description] | [Why this guideline exists] |
+
+#### Escalation Paths
+
+> Escalations use UiPath Action Center to hand off decisions to humans. Agents decide when to escalate based on prompt instructions. Resolutions feed back into Agent Memory for continuous learning.
+
+| Trigger | Escalation | Action App | Assignee | Expected Outcome |
+|---------|-----------|------------|----------|-----------------|
+| [When this condition is met] | [Escalation name] | [Action App name] | [Role / person] | [What the human decides] |
+
+**Escalation Configuration:**
+
+| Property | Value |
+|----------|-------|
+| **Agent Memory Enabled** | [Yes / No — store escalation resolutions for future auto-resolution] |
+| **Suspension Behavior** | [Agent suspends until human responds] |
+| **Timeout** | [Max wait time before fallback action] |
+
+#### Confidence Scoring
+
+| Range | Evidence Level | Expected Accuracy |
+|-------|---------------|-------------------|
+| 0.90–1.0 | [What constitutes strong evidence] | [Target %] |
+| 0.75–0.89 | [What constitutes good evidence] | [Target %] |
+| 0.50–0.74 | [What constitutes weak evidence] | [Target %] |
+| 0.0–0.49 | [Insufficient evidence] | Route to manual review |
+
+#### Output Format
+
+```json
+{
+  "field_1": "description and allowed values",
+  "field_2": "description",
+  "confidence": 0.00,
+  "reasoning": "Required: specific evidence, not generic responses"
+}
+```
+
+### 7.3 Agent Tools
+
+> Map each tool to its UiPath Agent Builder type. See [Agent Builder tool types](#agent-builder-tool-types) for reference.
+
+| Tool Name | Builder Type | Description | Input | Output |
+|-----------|-------------|-------------|-------|--------|
+| [ToolName] | [Type] | [What it does] | [Key parameters] | [What it returns] |
+
+**Agent Builder Tool Types:**
+
+| Type | Description | When to Use |
+|------|-------------|-------------|
+| **RPA workflow** | Automated process connecting multiple steps | Multi-step operations involving UI automation or complex orchestration |
+| **API workflow** | Lightweight workflow exposed as API endpoint | Direct API calls to external systems (SAP, QuickBooks, etc.) |
+| **Agent** | Another agent performing a smaller job | Delegating a subtask to a specialized sub-agent |
+| **Activity** | Single activity (e.g., sending an email) | Simple one-step operations |
+| **MCP server** | Exchange context between agents and external tools | Connecting to external tool ecosystems via Model Context Protocol |
+
+**Built-in Tools Available:**
+
+| Tool | Description | When to Use |
+|------|-------------|-------------|
+| **Analyze Files** | Analyze files with an LLM | Processing documents, PDFs, images attached to agent context |
+| **Batch Transform** | Process and transform CSV files | Bulk data processing and transformation |
+| **DeepRAG** | Comprehensive synthesis across knowledge sources | Complex queries requiring multi-source knowledge base retrieval |
+| **Web Search** | Search the public web | Finding external information, market data, vendor lookups |
+| **Web Reader** | Extract readable text from public URLs | Reading specific web pages for reference data |
+| **Web Summary** | Generate AI-based summaries of web content | Summarizing external content for context |
+
+### 7.4 Knowledge Base
+
+| Source | Format | Purpose | Update Frequency |
+|--------|--------|---------|-----------------|
+| [Data source name] | [CSV / Excel / PDF / API] | [What patterns it enables] | [Daily / Weekly / Monthly] |
+
+**Ingestion Configuration:**
+
+| Property | Value |
+|----------|-------|
+| **Platform** | UiPath AI Center Knowledge Base |
+| **Chunk Size** | [tokens] |
+| **Embedding Model** | [model name] |
+
+---
+
+## 8. Patterns & Standards
+
+### 8.1 Naming Conventions
 
 | Element | Convention | Example |
 |---------|------------|---------|
@@ -184,14 +337,14 @@
 | Variables | Type prefix | str_Status, dt_Data |
 | Workflows | PascalCase | 01_ExtractInvoiceData.xaml |
 
-### 7.2 Error Handling
+### 8.2 Error Handling
 
 | Exception Type | When to Use | Handling |
 |----------------|-------------|----------|
 | BusinessRuleException | Business logic violations, data quality issues (missing/incomplete/invalid data), out-of-scope transactions, unauthorized requests, business rule violations | Log as Business Exception, mark for manual review, DO NOT retry (requires human intervention or data correction) |
 | ApplicationException | Technical/system errors (app not responding, network timeout, selector not found) | Log as Application Exception, automatic retry if configured, then escalate if retries exhausted |
 
-### 7.3 Logging
+### 8.3 Logging
 
 | Level | When to Use |
 |-------|-------------|
@@ -200,9 +353,9 @@
 
 ---
 
-## 8. Deployment
+## 9. Deployment
 
-### 8.1 Environment Configuration
+### 9.1 Environment Configuration
 
 | Environment | Orchestrator Folder |
 |-------------|---------------------|
@@ -210,7 +363,7 @@
 | Test | /Test/[Project] |
 | Prod | /Prod/[Project] |
 
-### 8.2 Dependencies
+### 9.2 Dependencies
 
 | Package | Version | Purpose |
 |---------|---------|---------|
@@ -219,7 +372,7 @@
 
 ---
 
-## 9. Change Log
+## 10. Change Log
 
 | Date | Version | Author | Changes |
 |------|---------|--------|---------|
